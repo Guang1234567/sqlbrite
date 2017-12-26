@@ -3,4 +3,6 @@ include ':sqlbrite-kotlin'
 include ':sqlbrite-lint'
 include ':sample'
 
+include ':sqlbrite-sqlcipher-integration'
+
 rootProject.name = 'sqlbrite-root'

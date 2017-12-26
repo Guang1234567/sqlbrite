@@ -20,6 +20,8 @@ dependencies {
 
   implementation project(':sqlbrite')
   implementation rootProject.ext.supportSqliteFramework
+
+  implementation project(':sqlbrite-sqlcipher-integration')
 }
 
 android {

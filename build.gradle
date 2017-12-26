@@ -38,6 +38,9 @@ ext {
   supportSqlite = 'android.arch.persistence:db:1.0.0'
   supportSqliteFramework = 'android.arch.persistence:db-framework:1.0.0'
 
+  // https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
+  supportSqlcipher = 'net.zetetic:android-database-sqlcipher:3.5.8@aar'
+
   // Third-party dependencies.
   kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
   dagger = 'com.google.dagger:dagger:2.13'

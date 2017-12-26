@@ -20,6 +20,8 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Factory;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
+import android.arch.persistence.db.sqlcipher.SqlcipherSQLiteOpenHelperFactory;
+
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 import dagger.Module;
@@ -41,14 +43,33 @@ public final class DbModule {
   }
 
   @Provides @Singleton BriteDatabase provideDatabase(SqlBrite sqlBrite, Application application) {
-    Configuration configuration = Configuration.builder(application)
+
+    // 原生
+    /*Configuration configuration = Configuration.builder(application)
         .name("todo.db")
         .callback(new DbCallback())
         .build();
+
     Factory factory = new FrameworkSQLiteOpenHelperFactory();
     SupportSQLiteOpenHelper helper = factory.create(configuration);
+
     BriteDatabase db = sqlBrite.wrapDatabaseHelper(helper, Schedulers.io());
-    db.setLoggingEnabled(true);
-    return db;
+    db.setLoggingEnabled(true);*/
+
+
+
+    // 加密
+    Configuration configuration_sqlcipher = Configuration.builder(application)
+            .name("todo_sqlcipher.db")
+            .callback(new DbCallback())
+            .build();
+
+    SqlcipherSQLiteOpenHelperFactory factory_sqlcipher = new SqlcipherSQLiteOpenHelperFactory();
+    SupportSQLiteOpenHelper helper_sqlcipher = factory_sqlcipher.create(configuration_sqlcipher, "Passsword_1234567");
+
+    BriteDatabase db_sqlcipher = sqlBrite.wrapDatabaseHelper(helper_sqlcipher, Schedulers.io());
+    db_sqlcipher.setLoggingEnabled(true);
+
+    return db_sqlcipher;
   }
 }
