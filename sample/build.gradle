@@ -22,6 +22,7 @@ dependencies {
   implementation rootProject.ext.supportSqliteFramework
 
   implementation project(':sqlbrite-sqlcipher-integration')
+  implementation project(':sqlbrite-wcdb-integration')
 }
 
 android {

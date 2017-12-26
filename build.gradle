@@ -41,6 +41,9 @@ ext {
   // https://www.zetetic.net/sqlcipher/sqlcipher-for-android/
   supportSqlcipher = 'net.zetetic:android-database-sqlcipher:3.5.8@aar'
 
+  // https://github.com/Tencent/wcdb
+  supportWcdb = 'com.tencent.wcdb:wcdb-android:1.0.5'
+
   // Third-party dependencies.
   kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}"
   dagger = 'com.google.dagger:dagger:2.13'

@@ -4,5 +4,6 @@ include ':sqlbrite-lint'
 include ':sample'
 
 include ':sqlbrite-sqlcipher-integration'
+include ':sqlbrite-wcdb-integration'
 
 rootProject.name = 'sqlbrite-root'

@@ -21,13 +21,13 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.db.SupportSQLiteStatement;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteTransactionListener;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.annotation.RequiresApi;
 import android.util.Pair;
 
-import net.sqlcipher.Cursor;
 import net.sqlcipher.SQLException;
 import net.sqlcipher.database.SQLiteCursor;
 import net.sqlcipher.database.SQLiteCursorDriver;
@@ -197,8 +197,8 @@ class SqlcipherSQLiteDatabase implements SupportSQLiteDatabase {
 
         return mDelegate.rawQueryWithFactory(new SQLiteDatabase.CursorFactory() {
             @Override
-            public Cursor newCursor(SQLiteDatabase db, SQLiteCursorDriver masterQuery,
-                                    String editTable, SQLiteQuery query) {
+            public net.sqlcipher.Cursor newCursor(SQLiteDatabase db, SQLiteCursorDriver masterQuery,
+                                                  String editTable, SQLiteQuery query) {
                 supportQuery.bindTo(new SqlcipherSQLiteProgram(query));
                 return new SQLiteCursor(db, masterQuery, editTable, query);
             }

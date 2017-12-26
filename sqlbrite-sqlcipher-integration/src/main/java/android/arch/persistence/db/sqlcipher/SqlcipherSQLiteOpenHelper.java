@@ -92,7 +92,7 @@ class SqlcipherSQLiteOpenHelper implements SupportSQLiteOpenHelper {
                     });
 
             if (loadLibs) {
-                net.sqlcipher.database.SQLiteDatabase.loadLibs(context);
+                SQLiteDatabase.loadLibs(context);
                 loadLibs = false; // only load once
             }
 
