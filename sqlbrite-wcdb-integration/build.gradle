@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 dependencies {
     api rootProject.ext.rxJava
@@ -34,3 +35,30 @@ android {
 }
 
 //apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'sqlbrite-wcdb-integration'
+
+    publishedGroupId = 'android.arch.persistence.db.wcdb'
+    libraryName = 'sqlbrite-wcdb-integration'
+    artifact = 'sqlbrite-wcdb-integration'
+
+    libraryDescription = 'A wrapper for Facebook Native Like Button (LikeView) on Android'
+
+    siteUrl = 'https://github.com/Guang1234567/sqlbrite'
+    gitUrl = 'https://github.com/Guang1234567/sqlbrite.git'
+
+    libraryVersion = '1.1.1'
+
+    developerId = 'GG1234567'
+    developerName = 'GG1234567'
+    developerEmail = 'lihansey163@163.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: '../installv1.gradle'
+apply from: '../bintrayv1.gradle'

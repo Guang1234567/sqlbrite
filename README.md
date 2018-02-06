@@ -8,6 +8,24 @@ Something I added
 
 2. Integrate [wcdb][] into `SqlBrite`.
 
+
+Download
+--------
+
+```groovy
+// if you use sqlcipher
+compile 'net.zetetic:android-database-sqlcipher:3.5.8@aar'
+compile 'android.arch.persistence.db.sqlcipher:sqlbrite-sqlcipher-integration:1.1.1'
+```
+
+```groovy
+// if you use sqlcipher
+compile 'com.tencent.wcdb:wcdb-android:1.0.5'
+compile 'android.arch.persistence.db.wcdb:sqlbrite-wcdb-integration:1.1.1'
+```
+
+
+
 Usage
 -----
 
