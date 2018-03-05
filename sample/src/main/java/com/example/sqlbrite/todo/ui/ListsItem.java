@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @AutoValue
-abstract class ListsItem implements Parcelable {
+public abstract class ListsItem implements Parcelable {
   private static String ALIAS_LIST = "list";
   private static String ALIAS_ITEM = "item";
 
@@ -47,7 +47,7 @@ abstract class ListsItem implements Parcelable {
   abstract String name();
   abstract int itemCount();
 
-  static Function<Cursor, ListsItem> MAPPER = new Function<Cursor, ListsItem>() {
+  public static Function<Cursor, ListsItem> MAPPER = new Function<Cursor, ListsItem>() {
     @Override public ListsItem apply(Cursor cursor) {
       long id = Db.getLong(cursor, TodoList.ID);
       String name = Db.getString(cursor, TodoList.NAME);

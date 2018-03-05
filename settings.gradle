@@ -1,4 +1,4 @@
-include ':sqlbrite'
+include ':sqlbrite', ':daosupport'
 include ':sqlbrite-kotlin'
 include ':sqlbrite-lint'
 include ':sample'

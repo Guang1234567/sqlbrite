@@ -27,94 +27,113 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.example.sqlbrite.todo.R;
+import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.db.TodoListDao;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.TodoApp;
-import com.squareup.sqlbrite3.BriteDatabase;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import javax.inject.Inject;
 
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
 public final class ListsFragment extends Fragment {
-  interface Listener {
-    void onListClicked(long id);
-    void onNewListClicked();
-  }
+    interface Listener {
+        void onListClicked(long id);
 
-  static ListsFragment newInstance() {
-    return new ListsFragment();
-  }
-
-  @Inject BriteDatabase db;
-
-  @BindView(android.R.id.list) ListView listView;
-  @BindView(android.R.id.empty) View emptyView;
-
-  private Listener listener;
-  private ListsAdapter adapter;
-  private Disposable disposable;
-
-  @Override public void onAttach(Activity activity) {
-    if (!(activity instanceof Listener)) {
-      throw new IllegalStateException("Activity must implement fragment Listener.");
+        void onNewListClicked();
     }
 
-    super.onAttach(activity);
-    TodoApp.getComponent(activity).inject(this);
-    setHasOptionsMenu(true);
+    static ListsFragment newInstance() {
+        return new ListsFragment();
+    }
 
-    listener = (Listener) activity;
-    adapter = new ListsAdapter(activity);
-  }
+    @Inject
+    TodoListDao todoListDao;
 
-  @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    super.onCreateOptionsMenu(menu, inflater);
+    @BindView(android.R.id.list)
+    ListView listView;
+    @BindView(android.R.id.empty)
+    View emptyView;
 
-    MenuItem item = menu.add(R.string.new_list)
-        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-          @Override public boolean onMenuItemClick(MenuItem item) {
-            listener.onNewListClicked();
-            return true;
-          }
-        });
-    MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
-  }
+    private Listener listener;
+    private ListsAdapter adapter;
+    private Disposable disposable;
 
-  @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.lists, container, false);
-  }
+    @Override
+    public void onAttach(Activity activity) {
+        if (!(activity instanceof Listener)) {
+            throw new IllegalStateException("Activity must implement fragment Listener.");
+        }
 
-  @Override
-  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    ButterKnife.bind(this, view);
-    listView.setEmptyView(emptyView);
-    listView.setAdapter(adapter);
-  }
+        super.onAttach(activity);
+        TodoApp.getComponent(activity).inject(this);
+        setHasOptionsMenu(true);
 
-  @OnItemClick(android.R.id.list) void listClicked(long listId) {
-    listener.onListClicked(listId);
-  }
+        listener = (Listener) activity;
+        adapter = new ListsAdapter(activity);
+    }
 
-  @Override public void onResume() {
-    super.onResume();
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
 
-    getActivity().setTitle("To-Do");
+        MenuItem item = menu.add(R.string.new_list)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        listener.onNewListClicked();
+                        return true;
+                    }
+                });
+        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+    }
 
-    disposable = db.createQuery(ListsItem.TABLES, ListsItem.QUERY)
-        .mapToList(ListsItem.MAPPER)
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.lists, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
+        listView.setEmptyView(emptyView);
+        listView.setAdapter(adapter);
+    }
+
+    @OnItemClick(android.R.id.list)
+    void listClicked(long listId) {
+        listener.onListClicked(listId);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getActivity().setTitle("To-Do");
+
+    /*disposable = db.createQuery(ListsItem.TABLES, ListsItem.QUERY)
+        .mapToList(ListsItem.MAPPER) // 耗内存
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(adapter);
-  }
+        .subscribe(adapter);*/
 
-  @Override public void onPause() {
-    super.onPause();
-    disposable.dispose();
-  }
+
+        disposable = todoListDao.createListsItemsQuery(5) // 省内存
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(adapter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        disposable.dispose();
+    }
 }

@@ -1,0 +1,63 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+dependencies {
+    provided project(':sqlbrite')
+    implementation rootProject.ext.supportAnnotations
+
+    androidTestImplementation rootProject.ext.supportTestRunner
+    androidTestImplementation rootProject.ext.truth
+    androidTestImplementation rootProject.ext.supportSqliteFramework
+
+    lintChecks project(':sqlbrite-lint')
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        textOutput 'stdout'
+        textReport true
+    }
+}
+
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'daosupport'
+
+    publishedGroupId = 'com.squareup.sqlbrite3.support.dao'
+    libraryName = 'daosupport'
+    artifact = 'daosupport'
+
+    libraryDescription = 'A wrapper for Facebook Native Like Button (LikeView) on Android'
+
+    siteUrl = 'https://github.com/Guang1234567/sqlbrite'
+    gitUrl = 'https://github.com/Guang1234567/sqlbrite.git'
+
+    libraryVersion = '1.1.1'
+
+    developerId = 'GG1234567'
+    developerName = 'GG1234567'
+    developerEmail = 'lihansey163@163.com'
+
+    licenseName = 'The MIT License'
+    licenseUrl = 'https://mit-license.org/'
+    allLicenses = ["MIT"]
+}
+
+apply from: '../installv1.gradle'
+apply from: '../bintrayv1.gradle'
