@@ -23,6 +23,7 @@ import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.arch.persistence.db.sqlcipher.SqlcipherSQLiteOpenHelperFactory;
 import android.arch.persistence.db.wcdb.WcdbSQLiteOpenHelperFactory;
 
+import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 
@@ -125,5 +126,11 @@ public final class DbModule {
     @Singleton
     TodoItemDao provideTodoItemDao(BriteDatabase db) {
         return new TodoItemDao(db);
+    }
+
+    @Provides
+    @Singleton
+    ListsItemDao provideListsItemDao(BriteDatabase db) {
+        return new ListsItemDao(db);
     }
 }

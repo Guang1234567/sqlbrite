@@ -22,11 +22,12 @@ import static android.database.sqlite.SQLiteDatabase.CONFLICT_NONE;
  */
 
 public abstract class BriteDaoSupport<ENTITY> {
-    private BriteDatabase mDatabase;
 
-    private Class mEntityClazz;
+    private final BriteDatabase mDatabase;
 
-    private String mTableName;
+    private final Class mEntityClazz;
+
+    private final String mTableName;
 
     private final String SQL_QUERY;
 
@@ -36,24 +37,28 @@ public abstract class BriteDaoSupport<ENTITY> {
         ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
         mEntityClazz = (Class) type.getActualTypeArguments()[0];
 
-        mTableName = getTableName(mEntityClazz);
+        mTableName = toTableName(mEntityClazz);
 
         SQL_QUERY = new StringBuilder("SELECT * FROM ").append(mTableName).toString();
     }
 
     final public long insert(ENTITY t) {
-        ContentValues cvsWithoutRowId = toContentValues(t);
-        cvsWithoutRowId.remove(BaseColumns._ID);
-        return mDatabase.insert(mTableName, CONFLICT_NONE, cvsWithoutRowId);
+        ContentValues cvs = toContentValues(t);
+        return insert(CONFLICT_NONE, cvs);
+    }
+
+    final protected long insert(int conflictAlgorithm, ContentValues cvs) {
+        cvs.remove(BaseColumns._ID);
+        return mDatabase.insert(mTableName, conflictAlgorithm, cvs);
     }
 
     final public int deleteById(long rowId) {
         return mDatabase.delete(mTableName, BaseColumns._ID + " = " + rowId);
     }
 
-    final protected int delete(@Nullable String whereClause,
+    final protected int delete(@NonNull final String table, @Nullable String whereClause,
                                @Nullable String... whereArgs) {
-        return mDatabase.delete(mTableName, whereClause, whereArgs);
+        return mDatabase.delete(table, whereClause, whereArgs);
     }
 
     final public int update(ENTITY t) {
@@ -61,12 +66,12 @@ public abstract class BriteDaoSupport<ENTITY> {
                 CONFLICT_NONE,
                 toContentValues(t),
                 BaseColumns._ID + " = ?",
-                new String[]{String.valueOf(getRowId(t))});
+                new String[]{String.valueOf(toRowId(t))});
     }
 
-    protected int update(int conflictAlgorithm,
+    protected int update(@NonNull final String table, int conflictAlgorithm,
                          @NonNull ContentValues values, @Nullable String whereClause, @Nullable String... whereArgs) {
-        return mDatabase.update(mTableName,
+        return mDatabase.update(table,
                 conflictAlgorithm,
                 values,
                 whereClause,
@@ -104,9 +109,9 @@ public abstract class BriteDaoSupport<ENTITY> {
 
     @CheckResult
     @NonNull
-    final protected QueryObservable createQuery(@NonNull String sql,
+    final protected QueryObservable createQuery(@NonNull final String table, @NonNull String sql,
                                                 @NonNull Object... args) {
-        return mDatabase.createQuery(mTableName, sql, args);
+        return mDatabase.createQuery(table, sql, args);
     }
 
     @CheckResult
@@ -116,11 +121,19 @@ public abstract class BriteDaoSupport<ENTITY> {
         return mDatabase.createQuery(tables, sql, args);
     }
 
+    final protected Class getEntityClazz() {
+        return mEntityClazz;
+    }
+
+    final protected String getTableName() {
+        return mTableName;
+    }
+
     protected abstract ContentValues toContentValues(ENTITY e);
 
     protected abstract ENTITY toEntity(Cursor cursor);
 
-    protected abstract long getRowId(ENTITY e);
+    protected abstract long toRowId(ENTITY e);
 
-    protected abstract String getTableName(Class<ENTITY> clazz);
+    protected abstract String toTableName(Class<ENTITY> clazz);
 }

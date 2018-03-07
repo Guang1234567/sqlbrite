@@ -16,7 +16,8 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
-import android.database.Cursor;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,141 +29,161 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
-import com.example.sqlbrite.todo.db.Db;
-import com.example.sqlbrite.todo.db.TodoItem;
+import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.db.TodoItemDao;
-import com.example.sqlbrite.todo.db.TodoList;
 import com.example.sqlbrite.todo.db.TodoListDao;
 import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
-import com.squareup.sqlbrite3.BriteDatabase;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
 import javax.inject.Inject;
 
-import static android.database.sqlite.SQLiteDatabase.CONFLICT_NONE;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
-import static com.squareup.sqlbrite3.SqlBrite.Query;
 
 public final class ItemsFragment extends Fragment {
-  private static final String KEY_LIST_ID = "list_id";
+    private static final String KEY_LIST_ID = "list_id";
 
-  public interface Listener {
-    void onNewItemClicked(long listId);
-  }
+    public interface Listener {
+        void onNewItemClicked(long listId);
+    }
 
-  public static ItemsFragment newInstance(long listId) {
-    Bundle arguments = new Bundle();
-    arguments.putLong(KEY_LIST_ID, listId);
+    public static ItemsFragment newInstance(long listId) {
+        Bundle arguments = new Bundle();
+        arguments.putLong(KEY_LIST_ID, listId);
 
-    ItemsFragment fragment = new ItemsFragment();
-    fragment.setArguments(arguments);
-    return fragment;
-  }
+        ItemsFragment fragment = new ItemsFragment();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
+/*
   @Inject
   TodoItemDao todoItemDao;
   @Inject
   TodoListDao todoListDao;
+*/
 
-  @BindView(android.R.id.list) ListView listView;
-  @BindView(android.R.id.empty) View emptyView;
+    @Inject
+    ViewModelProvider.Factory mViewModelFactory;
 
-  private Listener listener;
-  private ItemsAdapter adapter;
-  private CompositeDisposable disposables;
+    //@Inject
+    MainViewModel mViewModel;
 
-  private long getListId() {
-    return getArguments().getLong(KEY_LIST_ID);
-  }
+    @BindView(android.R.id.list)
+    ListView listView;
+    @BindView(android.R.id.empty)
+    View emptyView;
 
-  @Override public void onAttach(Activity activity) {
-    if (!(activity instanceof Listener)) {
-      throw new IllegalStateException("Activity must implement fragment Listener.");
+    private Listener listener;
+    private ItemsAdapter adapter;
+    private CompositeDisposable disposables;
+
+    private long getListId() {
+        return getArguments().getLong(KEY_LIST_ID);
     }
 
-    super.onAttach(activity);
-    TodoApp.getComponent(activity).inject(this);
-    setHasOptionsMenu(true);
+    @Override
+    public void onAttach(Activity activity) {
+        if (!(activity instanceof Listener)) {
+            throw new IllegalStateException("Activity must implement fragment Listener.");
+        }
 
-    listener = (Listener) activity;
-    adapter = new ItemsAdapter(activity);
-  }
+        super.onAttach(activity);
+        TodoApp.getComponent(activity).inject(this);
+        setHasOptionsMenu(true);
 
-  @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    super.onCreateOptionsMenu(menu, inflater);
+        listener = (Listener) activity;
+        adapter = new ItemsAdapter(activity);
+    }
 
-    MenuItem item = menu.add(R.string.new_item)
-        .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-          @Override public boolean onMenuItemClick(MenuItem item) {
-            listener.onNewItemClicked(getListId());
-            return true;
-          }
-        });
-    MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
-  }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
 
-  @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.items, container, false);
-  }
+        MenuItem item = menu.add(R.string.new_item)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        listener.onNewItemClicked(getListId());
+                        return true;
+                    }
+                });
+        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+    }
 
-  @Override
-  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    ButterKnife.bind(this, view);
-    listView.setEmptyView(emptyView);
-    listView.setAdapter(adapter);
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.items, container, false);
+    }
 
-    RxAdapterView.itemClickEvents(listView)
-        .observeOn(Schedulers.io())
-        .subscribe(new Consumer<AdapterViewItemClickEvent>() {
-          @Override public void accept(AdapterViewItemClickEvent event) {
-            boolean newValue = !adapter.getItem(event.position()).complete();
-            todoItemDao.complete(event.id(), newValue);
-          }
-        });
-  }
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-  @Override public void onResume() {
-    super.onResume();
-    long listId = getListId();
+        mViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(MainViewModel.class);
 
-    disposables = new CompositeDisposable();
+        ButterKnife.bind(this, view);
+        listView.setEmptyView(emptyView);
+        listView.setAdapter(adapter);
 
-    Observable<Integer> itemCount = todoItemDao.itemCount(listId);
-    Observable<String> listName = todoListDao.listName(listId);
+        RxAdapterView.itemClickEvents(listView)
+                .observeOn(Schedulers.io())
+                .subscribe(new Consumer<AdapterViewItemClickEvent>() {
+                    @Override
+                    public void accept(AdapterViewItemClickEvent event) {
+                        boolean newValue = !adapter.getItem(event.position()).complete();
+                        mViewModel.complete(event.id(), newValue);
+                    }
+                });
+    }
 
-    disposables.add(
-        Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
-          @Override public String apply(String listName, Integer itemCount) {
-            return listName + " (" + itemCount + ")";
-          }
-        })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Consumer<String>() {
-              @Override public void accept(String title) throws Exception {
-                getActivity().setTitle(title);
-              }
-            }));
+    @Override
+    public void onResume() {
+        super.onResume();
+        long listId = getListId();
 
-    disposables.add(todoItemDao.createTodoItemsByListId(listId)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(adapter));
-  }
+        disposables = new CompositeDisposable();
 
-  @Override public void onPause() {
-    super.onPause();
-    disposables.dispose();
-  }
+        Observable<Integer> itemCount = mViewModel.createQueryItemCount(listId);
+        Observable<String> listName = mViewModel.createQueryListName(listId);
+
+        disposables.add(
+                Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
+                    @Override
+                    public String apply(String listName, Integer itemCount) {
+                        return listName + " (" + itemCount + ")";
+                    }
+                })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<String>() {
+                            @Override
+                            public void accept(String title) throws Exception {
+                                getActivity().setTitle(title);
+                            }
+                        }));
+
+        disposables.add(mViewModel.createQueryTodoItemsByListId(listId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(adapter));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        disposables.dispose();
+    }
 }

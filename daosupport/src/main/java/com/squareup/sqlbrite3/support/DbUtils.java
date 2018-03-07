@@ -1,4 +1,4 @@
-package com.squareup.sqlbrite3.support.dao;
+package com.squareup.sqlbrite3.support;
 
 import android.database.Cursor;
 

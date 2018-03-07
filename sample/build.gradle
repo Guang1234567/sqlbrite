@@ -25,9 +25,12 @@ dependencies {
     //implementation project(':sqlbrite-sqlcipher-integration')
     implementation rootProject.ext.supportSqlcipher
     implementation rootProject.ext.sqlbrite_sqlcipher_integration
-    //implementation project(':sqlbrite-wcdb-integration')
-    implementation rootProject.ext.supportWcdb
-    implementation rootProject.ext.sqlbrite_wcdb_integration
+    implementation project(':sqlbrite-wcdb-integration')
+    //implementation rootProject.ext.supportWcdb
+    //implementation rootProject.ext.sqlbrite_wcdb_integration
+
+    implementation rootProject.ext.androidArchViewModel
+    implementation "android.arch.lifecycle:extensions:1.1.0"
 }
 
 android {

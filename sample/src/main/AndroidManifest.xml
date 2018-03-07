@@ -3,7 +3,9 @@
     package="com.example.sqlbrite.todo"
     >
 
-  <application
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
       android:label="@string/app_name"
       android:name=".TodoApp"
       android:allowBackup="false"

@@ -16,26 +16,35 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
-import com.example.sqlbrite.todo.db.TodoListDao;
+import com.example.sqlbrite.todo.controler.MainViewModel;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -44,6 +53,8 @@ import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
 public final class ListsFragment extends Fragment {
+    private static final String TAG = "ListsFragment";
+
     interface Listener {
         void onListClicked(long id);
 
@@ -54,13 +65,26 @@ public final class ListsFragment extends Fragment {
         return new ListsFragment();
     }
 
+/*
     @Inject
-    TodoListDao todoListDao;
+    BriteDatabase db;
+
+    @Inject
+    ListsItemDao mListsItemDao;
+*/
+
+    @Inject
+    ViewModelProvider.Factory mViewModelFactory;
+
+    //@Inject
+    MainViewModel mViewModel;
 
     @BindView(android.R.id.list)
     ListView listView;
     @BindView(android.R.id.empty)
     View emptyView;
+    @BindView(R.id.export_db)
+    Button btnExportDB;
 
     private Listener listener;
     private ListsAdapter adapter;
@@ -109,9 +133,26 @@ public final class ListsFragment extends Fragment {
         listView.setAdapter(adapter);
     }
 
+    @OnClick(R.id.export_db)
+    void onExportDB(View btn) {
+        try {
+            File dstFile = mViewModel.exportDecryption();
+            Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "导出数据库失败!", e);
+            Toast.makeText(getContext(), "导出数据库失败!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @OnItemClick(android.R.id.list)
     void listClicked(long listId) {
         listener.onListClicked(listId);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(MainViewModel.class);
     }
 
     @Override
@@ -126,7 +167,7 @@ public final class ListsFragment extends Fragment {
         .subscribe(adapter);*/
 
 
-        disposable = todoListDao.createListsItemsQuery(5) // 省内存
+        disposable = mViewModel.createQueryListsItems() // 省内存
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter);
     }

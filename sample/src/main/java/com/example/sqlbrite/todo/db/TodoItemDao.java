@@ -15,7 +15,7 @@ import io.reactivex.functions.Function;
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_NONE;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/5 18:04
  */
 
@@ -36,12 +36,12 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
     }
 
     @Override
-    protected long getRowId(TodoItem e) {
+    protected long toRowId(TodoItem e) {
         return e.id();
     }
 
     @Override
-    protected String getTableName(Class<TodoItem> clazz) {
+    protected String toTableName(Class<TodoItem> clazz) {
         return TodoItem.TABLE;
     }
 
@@ -52,7 +52,7 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
 
     public boolean complete(long id, boolean complete) {
-        return update(CONFLICT_NONE,
+        return update(getTableName(), CONFLICT_NONE,
                 new TodoItem.Builder().complete(complete).build(), TodoItem.ID + " = ?",
                 String.valueOf(id)) > 0;
     }
@@ -67,8 +67,8 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
             + TodoItem.LIST_ID
             + " = ?";
 
-    public Observable<Integer> itemCount(long listId) {
-        return createQuery(COUNT_QUERY, listId) //
+    public Observable<Integer> createQueryItemCount(long listId) {
+        return createQuery(getTableName(), COUNT_QUERY, listId) //
                 .map(new Function<SqlBrite.Query, Integer>() {
                     @Override
                     public Integer apply(SqlBrite.Query query) {
@@ -93,8 +93,16 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
             + TodoItem.COMPLETE
             + " ASC";
 
-    public Observable<List<TodoItem>> createTodoItemsByListId(long listId) {
-        return createQuery(LIST_QUERY, listId)
+    public Observable<List<TodoItem>> createQueryTodoItemsByListId(long listId) {
+        return createQuery(getTableName(), LIST_QUERY, listId)
                 .mapToList(TodoItem.MAPPER);
+    }
+
+    public long createNewOne(long listId, String description) {
+        return insert(CONFLICT_NONE,
+                new TodoItem.Builder()
+                        .listId(listId)
+                        .description(description)
+                        .build());
     }
 }

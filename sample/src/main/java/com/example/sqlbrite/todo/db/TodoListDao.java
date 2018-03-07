@@ -3,19 +3,17 @@ package com.example.sqlbrite.todo.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.example.sqlbrite.todo.ui.ListsItem;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 import com.squareup.sqlbrite3.support.dao.BriteDaoSupport;
 
-import java.util.List;
-
 import io.reactivex.Observable;
-import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_NONE;
+
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/5 17:22
  */
 
@@ -36,12 +34,12 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
     }
 
     @Override
-    protected long getRowId(TodoList e) {
+    protected long toRowId(TodoList e) {
         return e.id();
     }
 
     @Override
-    protected String getTableName(Class<TodoList> clazz) {
+    protected String toTableName(Class<TodoList> clazz) {
         return TodoList.TABLE;
     }
 
@@ -50,35 +48,28 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
     // 业务逻辑
     //------------------------------------------------------------
 
-    public Observable<List<ListsItem>> createListsItemsQuery(final int max) {
-        return createQuery(ListsItem.TABLES, ListsItem.QUERY)
-                .flatMapSingle(new Function<SqlBrite.Query, SingleSource<List<ListsItem>>>() {
+    private static final String TITLE_QUERY =
+            "SELECT " + TodoList.NAME + " FROM " + TodoList.TABLE + " WHERE " + TodoList.ID + " = ?";
+
+    public Observable<String> createQueryListName(long listId) {
+        return createQuery(getTableName(), TITLE_QUERY, listId)
+                .map(new Function<SqlBrite.Query, String>() {
                     @Override
-                    public SingleSource<List<ListsItem>> apply(SqlBrite.Query query) throws Exception {
-                        return query.asRows(ListsItem.MAPPER)
-                                .take(max)
-                                .toList();
+                    public String apply(SqlBrite.Query query) {
+                        Cursor cursor = query.run();
+                        try {
+                            if (!cursor.moveToNext()) {
+                                throw new AssertionError("No rows");
+                            }
+                            return cursor.getString(0);
+                        } finally {
+                            cursor.close();
+                        }
                     }
                 });
     }
 
-    private static final String TITLE_QUERY =
-            "SELECT " + TodoList.NAME + " FROM " + TodoList.TABLE + " WHERE " + TodoList.ID + " = ?";
-
-    public Observable<String> listName(long listId) {
-        return createQuery(TITLE_QUERY, listId).map(new Function<SqlBrite.Query, String>() {
-            @Override
-            public String apply(SqlBrite.Query query) {
-                Cursor cursor = query.run();
-                try {
-                    if (!cursor.moveToNext()) {
-                        throw new AssertionError("No rows");
-                    }
-                    return cursor.getString(0);
-                } finally {
-                    cursor.close();
-                }
-            }
-        });
+    public long createNewOne(String name) {
+        return insert(CONFLICT_NONE, new TodoList.Builder().name(name).build());
     }
 }

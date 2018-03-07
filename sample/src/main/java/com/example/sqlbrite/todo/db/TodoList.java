@@ -20,7 +20,7 @@ import android.database.Cursor;
 import android.os.Parcelable;
 
 import com.google.auto.value.AutoValue;
-import com.squareup.sqlbrite3.support.dao.DbUtils;
+import com.squareup.sqlbrite3.support.DbUtils;
 
 import io.reactivex.functions.Function;
 

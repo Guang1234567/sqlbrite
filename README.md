@@ -8,6 +8,15 @@ Something I added
 
 2. Integrate [wcdb][] into `SqlBrite`.
 
+2018-3-7 16:36:29
+---------
+
+1. Integrate [ViewModel library into Sample.
+
+> Smaple = rxjava + ViewModel + SqlBrite + Dagger
+
+2. Add `BriteDaoSupport` like `HibernateDaoSupport`, in order to provide some common **CRUD** function.
+
 
 Download
 --------
