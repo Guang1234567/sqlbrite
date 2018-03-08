@@ -37,11 +37,11 @@ android {
 
 ext {
     bintrayRepo = 'maven'
-    bintrayName = 'daosupport'
+    bintrayName = 'sqlbrite-support'
 
-    publishedGroupId = 'com.squareup.sqlbrite3.support.dao'
-    libraryName = 'daosupport'
-    artifact = 'daosupport'
+    publishedGroupId = 'com.squareup.sqlbrite3.support'
+    libraryName = 'sqlbrite-support'
+    artifact = 'sqlbrite-support'
 
     libraryDescription = 'A wrapper for Facebook Native Like Button (LikeView) on Android'
 

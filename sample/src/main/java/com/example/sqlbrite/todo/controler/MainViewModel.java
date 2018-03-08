@@ -25,7 +25,6 @@ import io.reactivex.Observable;
 
 public class MainViewModel extends ViewModel {
 
-    @Inject
     BriteDatabase mBriteDatabaseb;
 
     private final ListsItemDao mListsItemDao;

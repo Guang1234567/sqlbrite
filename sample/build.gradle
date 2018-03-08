@@ -19,7 +19,7 @@ dependencies {
     annotationProcessor rootProject.ext.autoValueParcel
 
     implementation project(':sqlbrite')
-    implementation project(':daosupport')
+    implementation project(':sqlbrite-support')
     implementation rootProject.ext.supportSqliteFramework
 
     //implementation project(':sqlbrite-sqlcipher-integration')

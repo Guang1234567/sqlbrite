@@ -23,9 +23,12 @@ import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.arch.persistence.db.sqlcipher.SqlcipherSQLiteOpenHelperFactory;
 import android.arch.persistence.db.wcdb.WcdbSQLiteOpenHelperFactory;
 
+import com.example.sqlbrite.todo.schedulers.SchedulerModule;
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
+import com.squareup.sqlbrite3.support.BriteDatabaseProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -52,8 +55,7 @@ public final class DbModule {
 
     @Provides
     @Singleton
-    BriteDatabase provideDatabase(SqlBrite sqlBrite, Application application) {
-
+    SupportSQLiteOpenHelper provideSupportSQLiteOpenHelper(Application application) {
         // 1) android native sqlite, no cipher
         /*
         Configuration configuration = Configuration.builder(application)
@@ -100,20 +102,27 @@ public final class DbModule {
 
 
         // 4) wcdb base on SQLCipher, has cipher
-        ///*
         Configuration configuration_wcdb_cipher = Configuration.builder(application)
                 .name("todo_wcdb_cipher.db")
                 .callback(new DbCallback())
                 .build();
 
         WcdbSQLiteOpenHelperFactory factory_wcdb_cipher = new WcdbSQLiteOpenHelperFactory();
-        SupportSQLiteOpenHelper helper_wcdb_cipher = factory_wcdb_cipher.create(configuration_wcdb_cipher, "Passsword_7654321");
+        return factory_wcdb_cipher.create(configuration_wcdb_cipher, "Passsword_7654321");
+    }
 
-        BriteDatabase db_wcdb_cipher = sqlBrite.wrapDatabaseHelper(helper_wcdb_cipher, Schedulers.io());
-        db_wcdb_cipher.setLoggingEnabled(true);
-        //*/
+    @Provides
+    @Singleton
+    BriteDatabase provideDatabase(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
+        BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(helper, schedulerProvider.database());
+        briteDatabase.setLoggingEnabled(true);
+        return briteDatabase;
+    }
 
-        return db_wcdb_cipher;
+    @Provides
+    @Singleton
+    BriteDatabaseProvider provideDatabaseProvider(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
+        return new BriteDatabaseProvider(sqlBrite, helper, schedulerProvider.database());
     }
 
     @Provides

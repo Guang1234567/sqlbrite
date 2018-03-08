@@ -13,36 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo;
+package com.example.sqlbrite.todo.schedulers;
 
-import android.app.Application;
-
-import com.example.sqlbrite.todo.controler.ViewModelModule;
-import com.example.sqlbrite.todo.db.DbModule;
-import com.example.sqlbrite.todo.schedulers.SchedulerModule;
+import com.example.sqlbrite.todo.ui.ListsItemDao;
+import com.squareup.sqlbrite3.BriteDatabase;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-        includes = {
-                DbModule.class,
-                SchedulerModule.class,
-                ViewModelModule.class
-        }
-)
-public final class TodoModule {
-    private final Application application;
-
-    TodoModule(Application application) {
-        this.application = application;
-    }
+@Module
+public final class SchedulerModule {
 
     @Provides
     @Singleton
-    Application provideApplication() {
-        return application;
+    SchedulerProvider provideSchedulerProvider() {
+        return new TodoSchedulerProvider();
     }
 }

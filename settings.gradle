@@ -1,9 +1,11 @@
-include ':sqlbrite', ':daosupport'
+include ':sqlbrite'
 include ':sqlbrite-kotlin'
 include ':sqlbrite-lint'
 include ':sample'
 
 include ':sqlbrite-sqlcipher-integration'
 include ':sqlbrite-wcdb-integration'
+include ':sqlbrite-support'
+
 
 rootProject.name = 'sqlbrite-root'
