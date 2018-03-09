@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.db;
+package com.example.sqlbrite.todo.model.local.db;
 
 import android.database.Cursor;
 

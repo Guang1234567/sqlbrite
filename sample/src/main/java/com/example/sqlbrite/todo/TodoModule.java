@@ -18,7 +18,7 @@ package com.example.sqlbrite.todo;
 import android.app.Application;
 
 import com.example.sqlbrite.todo.controler.ViewModelModule;
-import com.example.sqlbrite.todo.db.DbModule;
+import com.example.sqlbrite.todo.model.DataSourceModule;
 import com.example.sqlbrite.todo.schedulers.SchedulerModule;
 
 import javax.inject.Singleton;
@@ -28,9 +28,9 @@ import dagger.Provides;
 
 @Module(
         includes = {
-                DbModule.class,
-                SchedulerModule.class,
-                ViewModelModule.class
+                DataSourceModule.class,
+                ViewModelModule.class,
+                SchedulerModule.class
         }
 )
 public final class TodoModule {

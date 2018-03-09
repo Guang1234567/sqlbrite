@@ -1,4 +1,4 @@
-package com.example.sqlbrite.todo.db;
+package com.example.sqlbrite.todo.model.local.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;

@@ -1,7 +1,7 @@
 package com.example.sqlbrite.todo.ui;
 
-import com.example.sqlbrite.todo.db.TodoItem;
-import com.example.sqlbrite.todo.db.TodoList;
+import com.example.sqlbrite.todo.model.local.db.TodoItem;
+import com.example.sqlbrite.todo.model.local.db.TodoList;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 

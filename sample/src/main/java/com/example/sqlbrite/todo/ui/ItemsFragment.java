@@ -16,11 +16,9 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,17 +28,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.db.TodoItemDao;
-import com.example.sqlbrite.todo.db.TodoListDao;
 import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -48,15 +43,14 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import javax.inject.Inject;
-
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
-public final class ItemsFragment extends Fragment {
+public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
     private static final String KEY_LIST_ID = "list_id";
 
     public interface Listener {
+
         void onNewItemClicked(long listId);
     }
 
@@ -69,25 +63,14 @@ public final class ItemsFragment extends Fragment {
         return fragment;
     }
 
-/*
-  @Inject
-  TodoItemDao todoItemDao;
-  @Inject
-  TodoListDao todoListDao;
-*/
-
-    @Inject
-    ViewModelProvider.Factory mViewModelFactory;
-
-    //@Inject
-    MainViewModel mViewModel;
 
     @BindView(android.R.id.list)
     ListView listView;
+
     @BindView(android.R.id.empty)
     View emptyView;
-
     private Listener listener;
+
     private ItemsAdapter adapter;
     private CompositeDisposable disposables;
 
@@ -96,17 +79,22 @@ public final class ItemsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
         if (!(activity instanceof Listener)) {
             throw new IllegalStateException("Activity must implement fragment Listener.");
         }
 
-        super.onAttach(activity);
-        TodoApp.getComponent(activity).inject(this);
         setHasOptionsMenu(true);
 
         listener = (Listener) activity;
         adapter = new ItemsAdapter(activity);
+    }
+
+    @Override
+    protected void toInject(BaseViewModelFragment<MainViewModel> self) {
+        TodoApp.getComponent(getContext()).inject(this);
     }
 
     @Override
@@ -134,8 +122,6 @@ public final class ItemsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(MainViewModel.class);
-
         ButterKnife.bind(this, view);
         listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
@@ -146,7 +132,7 @@ public final class ItemsFragment extends Fragment {
                     @Override
                     public void accept(AdapterViewItemClickEvent event) {
                         boolean newValue = !adapter.getItem(event.position()).complete();
-                        mViewModel.complete(event.id(), newValue);
+                        getViewModel().complete(event.id(), newValue);
                     }
                 });
     }
@@ -158,8 +144,8 @@ public final class ItemsFragment extends Fragment {
 
         disposables = new CompositeDisposable();
 
-        Observable<Integer> itemCount = mViewModel.createQueryItemCount(listId);
-        Observable<String> listName = mViewModel.createQueryListName(listId);
+        Observable<Integer> itemCount = getViewModel().createQueryItemCount(listId);
+        Observable<String> listName = getViewModel().createQueryListName(listId);
 
         disposables.add(
                 Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
@@ -176,7 +162,7 @@ public final class ItemsFragment extends Fragment {
                             }
                         }));
 
-        disposables.add(mViewModel.createQueryTodoItemsByListId(listId)
+        disposables.add(getViewModel().createQueryTodoItemsByListId(listId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter));
     }

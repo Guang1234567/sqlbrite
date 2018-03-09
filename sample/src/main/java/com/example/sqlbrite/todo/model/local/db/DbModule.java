@@ -13,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.db;
+package com.example.sqlbrite.todo.model.local.db;
 
 import android.app.Application;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
-import android.arch.persistence.db.SupportSQLiteOpenHelper.Factory;
-import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
-import android.arch.persistence.db.sqlcipher.SqlcipherSQLiteOpenHelperFactory;
 import android.arch.persistence.db.wcdb.WcdbSQLiteOpenHelperFactory;
 
-import com.example.sqlbrite.todo.schedulers.SchedulerModule;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
-import com.squareup.sqlbrite3.support.BriteDatabaseProvider;
-
-import dagger.Module;
-import dagger.Provides;
-import io.reactivex.schedulers.Schedulers;
 
 import javax.inject.Singleton;
 
+import dagger.Module;
+import dagger.Provides;
 import timber.log.Timber;
 
 @Module
@@ -119,11 +112,11 @@ public final class DbModule {
         return briteDatabase;
     }
 
-    @Provides
+    /*@Provides
     @Singleton
     BriteDatabaseProvider provideDatabaseProvider(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
         return new BriteDatabaseProvider(sqlBrite, helper, schedulerProvider.database());
-    }
+    }*/
 
     @Provides
     @Singleton

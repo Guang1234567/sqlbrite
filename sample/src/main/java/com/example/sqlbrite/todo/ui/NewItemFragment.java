@@ -32,7 +32,7 @@ import android.widget.EditText;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.db.TodoItemDao;
+import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import javax.inject.Inject;

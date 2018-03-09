@@ -18,8 +18,8 @@ package com.example.sqlbrite.todo.ui;
 import android.database.Cursor;
 import android.os.Parcelable;
 
-import com.example.sqlbrite.todo.db.Db;
-import com.example.sqlbrite.todo.db.TodoList;
+import com.example.sqlbrite.todo.model.local.db.Db;
+import com.example.sqlbrite.todo.model.local.db.TodoList;
 import com.google.auto.value.AutoValue;
 
 import io.reactivex.functions.Function;

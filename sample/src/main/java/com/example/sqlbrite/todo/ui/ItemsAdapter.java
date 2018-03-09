@@ -23,7 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
-import com.example.sqlbrite.todo.db.TodoItem;
+import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import io.reactivex.functions.Consumer;
 import java.util.Collections;
 import java.util.List;

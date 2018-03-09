@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.db;
+package com.example.sqlbrite.todo.model.local.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcelable;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.sqlbrite3.support.DbUtils;
 
 import io.reactivex.functions.Function;
 
+// Note: normally I wouldn't prefix table classes but I didn't want 'List' to be overloaded.
 @AutoValue
-public abstract class TodoItem implements Parcelable {
-    public static final String TABLE = "todo_item";
+public abstract class TodoList implements Parcelable {
+    public static final String TABLE = "todo_list";
 
     public static final String ID = "_id";
-    public static final String LIST_ID = "todo_list_id";
-    public static final String DESCRIPTION = "description";
-    public static final String COMPLETE = "complete";
+    public static final String NAME = "name";
+    public static final String ARCHIVED = "archived";
 
     public abstract long id();
 
-    public abstract long listId();
+    public abstract String name();
 
-    public abstract String description();
-
-    public abstract boolean complete();
+    public abstract boolean archived();
 
     public static final class Builder {
         private final ContentValues values = new ContentValues();
@@ -48,18 +47,13 @@ public abstract class TodoItem implements Parcelable {
             return this;
         }
 
-        public Builder listId(long listId) {
-            values.put(LIST_ID, listId);
+        public Builder name(String name) {
+            values.put(NAME, name);
             return this;
         }
 
-        public Builder description(String description) {
-            values.put(DESCRIPTION, description);
-            return this;
-        }
-
-        public Builder complete(boolean complete) {
-            values.put(COMPLETE, complete ? Db.BOOLEAN_TRUE : Db.BOOLEAN_FALSE);
+        public Builder archived(boolean archived) {
+            values.put(ARCHIVED, archived);
             return this;
         }
 
@@ -68,27 +62,25 @@ public abstract class TodoItem implements Parcelable {
         }
     }
 
-    static Function<Cursor, TodoItem> MAPPER = new Function<Cursor, TodoItem>() {
+    static Function<Cursor, TodoList> MAPPER = new Function<Cursor, TodoList>() {
         @Override
-        public TodoItem apply(Cursor cursor) {
+        public TodoList apply(Cursor cursor) {
             return toEntity(cursor);
         }
     };
 
-    static TodoItem toEntity(Cursor cursor) {
-        long id = Db.getLong(cursor, ID);
-        long listId = Db.getLong(cursor, LIST_ID);
-        String description = Db.getString(cursor, DESCRIPTION);
-        boolean complete = Db.getBoolean(cursor, COMPLETE);
-        return new AutoValue_TodoItem(id, listId, description, complete);
+    static TodoList toEntity(Cursor cursor) {
+        long id = DbUtils.getLong(cursor, TodoList.ID);
+        String name = DbUtils.getString(cursor, TodoList.NAME);
+        boolean archived = DbUtils.getBoolean(cursor, TodoList.ARCHIVED);
+        return new AutoValue_TodoList(id, name, archived);
     }
 
     ContentValues toContentValues() {
-        return new TodoItem.Builder()
+        return new TodoList.Builder()
                 .id(id())
-                .complete(complete())
-                .listId(listId())
-                .description(description())
+                .name(name())
+                .archived(archived())
                 .build();
     }
 }

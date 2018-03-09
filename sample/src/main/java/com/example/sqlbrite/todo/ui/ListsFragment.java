@@ -18,6 +18,7 @@ package com.example.sqlbrite.todo.ui;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -37,6 +38,7 @@ import android.widget.Toast;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.squareup.sqlbrite3.BriteDatabase;
 
 import java.io.File;
 
@@ -52,7 +54,7 @@ import io.reactivex.disposables.Disposable;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
-public final class ListsFragment extends Fragment {
+public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     private static final String TAG = "ListsFragment";
 
     interface Listener {
@@ -64,20 +66,6 @@ public final class ListsFragment extends Fragment {
     static ListsFragment newInstance() {
         return new ListsFragment();
     }
-
-/*
-    @Inject
-    BriteDatabase db;
-
-    @Inject
-    ListsItemDao mListsItemDao;
-*/
-
-    @Inject
-    ViewModelProvider.Factory mViewModelFactory;
-
-    //@Inject
-    MainViewModel mViewModel;
 
     @BindView(android.R.id.list)
     ListView listView;
@@ -91,17 +79,22 @@ public final class ListsFragment extends Fragment {
     private Disposable disposable;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Activity activity = getActivity();
         if (!(activity instanceof Listener)) {
             throw new IllegalStateException("Activity must implement fragment Listener.");
         }
-
-        super.onAttach(activity);
-        TodoApp.getComponent(activity).inject(this);
         setHasOptionsMenu(true);
 
         listener = (Listener) activity;
         adapter = new ListsAdapter(activity);
+    }
+
+    @Override
+    protected void toInject(BaseViewModelFragment<MainViewModel> self) {
+        TodoApp.getComponent(self.getContext()).inject(this);
     }
 
     @Override
@@ -136,7 +129,7 @@ public final class ListsFragment extends Fragment {
     @OnClick(R.id.export_db)
     void onExportDB(View btn) {
         try {
-            File dstFile = mViewModel.exportDecryption();
+            File dstFile = getViewModel().exportDecryption();
             Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(TAG, "导出数据库失败!", e);
@@ -152,7 +145,6 @@ public final class ListsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(MainViewModel.class);
     }
 
     @Override
@@ -167,7 +159,7 @@ public final class ListsFragment extends Fragment {
         .subscribe(adapter);*/
 
 
-        disposable = mViewModel.createQueryListsItems() // 省内存
+        disposable = getViewModel().createQueryListsItems() // 省内存
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter);
     }
