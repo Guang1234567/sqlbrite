@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
+import com.gg.rxbase.ui.RxBaseFragment;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -19,10 +21,13 @@ import javax.inject.Inject;
  * @date 2018/3/9 10:03
  */
 
-public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends Fragment {
+public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends RxBaseFragment {
 
     @Inject
-    public ViewModelProvider.Factory mViewModelFactory;
+    SchedulerProvider mSchedulerProvider;
+
+    @Inject
+    ViewModelProvider.Factory mViewModelFactory;
 
     private VIEWMODEL mViewModel;
 
@@ -44,5 +49,9 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
 
     protected VIEWMODEL getViewModel() {
         return mViewModel;
+    }
+
+    public SchedulerProvider getSchedulerProvider() {
+        return mSchedulerProvider;
     }
 }

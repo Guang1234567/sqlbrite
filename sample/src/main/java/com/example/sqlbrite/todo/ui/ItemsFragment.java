@@ -27,12 +27,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
+import com.trello.rxlifecycle2.android.FragmentEvent;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,7 +77,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
     private Listener listener;
 
     private ItemsAdapter adapter;
-    private CompositeDisposable disposables;
+    //private CompositeDisposable disposables;
 
     private long getListId() {
         return getArguments().getLong(KEY_LIST_ID);
@@ -115,6 +120,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(R.layout.items, container, false);
     }
 
@@ -127,7 +133,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         listView.setAdapter(adapter);
 
         RxAdapterView.itemClickEvents(listView)
-                .observeOn(Schedulers.io())
+                .observeOn(getSchedulerProvider().io())
                 .subscribe(new Consumer<AdapterViewItemClickEvent>() {
                     @Override
                     public void accept(AdapterViewItemClickEvent event) {
@@ -142,34 +148,46 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         super.onResume();
         long listId = getListId();
 
-        disposables = new CompositeDisposable();
+        //disposables = new CompositeDisposable();
 
         Observable<Integer> itemCount = getViewModel().createQueryItemCount(listId);
         Observable<String> listName = getViewModel().createQueryListName(listId);
 
-        disposables.add(
-                Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
+        //disposables.add(
+        Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
+            @Override
+            public String apply(String listName, Integer itemCount) {
+                return listName + " (" + itemCount + ")";
+            }
+        })
+                .observeOn(getSchedulerProvider().ui())
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public String apply(String listName, Integer itemCount) {
-                        return listName + " (" + itemCount + ")";
+                    public void accept(String title) throws Exception {
+                        getActivity().setTitle(title);
                     }
                 })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<String>() {
-                            @Override
-                            public void accept(String title) throws Exception {
-                                getActivity().setTitle(title);
-                            }
-                        }));
+        //)
+        ;
 
-        disposables.add(getViewModel().createQueryTodoItemsByListId(listId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter));
+        //disposables.add(
+        getViewModel().createQueryTodoItemsByListId(listId)
+                .compose(this.<List<TodoItem>>bindUntilEvent(FragmentEvent.PAUSE))
+                .observeOn(getSchedulerProvider().ui())
+                .subscribe(adapter)
+        //)
+        ;
+
+        CharSequence content = "请切换成横屏!\nViewModel 仍是同一个!\n创建时间 : " + String.valueOf(getViewModel().getLastCreateTime());
+        Toast.makeText(getContext(),
+                content,
+                Toast.LENGTH_LONG)
+                .show();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        disposables.dispose();
+        //disposables.dispose();
     }
 }

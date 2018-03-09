@@ -10,9 +10,9 @@ dependencies {
     implementation rootProject.ext.butterKnifeRuntime
     annotationProcessor rootProject.ext.butterKnifeCompiler
     implementation rootProject.ext.timber
-    implementation rootProject.ext.rxJava
-    implementation rootProject.ext.rxAndroid
-    implementation rootProject.ext.rxBinding
+    //implementation rootProject.ext.rxJava
+    //implementation rootProject.ext.rxAndroid
+    //implementation rootProject.ext.rxBinding
 
     compileOnly rootProject.ext.autoValue
     annotationProcessor rootProject.ext.autoValue
@@ -25,17 +25,18 @@ dependencies {
     //implementation project(':sqlbrite-sqlcipher-integration')
     implementation rootProject.ext.supportSqlcipher
     implementation rootProject.ext.sqlbrite_sqlcipher_integration
-    implementation project(':sqlbrite-wcdb-integration')
-    //implementation rootProject.ext.supportWcdb
-    //implementation rootProject.ext.sqlbrite_wcdb_integration
+    //implementation project(':sqlbrite-wcdb-integration')
+    implementation rootProject.ext.supportWcdb
+    implementation rootProject.ext.sqlbrite_wcdb_integration
 
     implementation rootProject.ext.androidArchViewModel
     implementation "android.arch.lifecycle:extensions:1.1.0"
+
+    compile 'com.gg.rxbase:rxbase:1.1.1'
 }
 
 android {
     compileSdkVersion versions.compileSdk
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7

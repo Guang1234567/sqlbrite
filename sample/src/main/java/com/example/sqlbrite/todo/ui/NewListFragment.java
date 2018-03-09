@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -32,8 +31,9 @@ import android.widget.EditText;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.model.local.db.TodoListDao;
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
 import javax.inject.Inject;
 
@@ -45,17 +45,16 @@ import io.reactivex.subjects.PublishSubject;
 
 import static butterknife.ButterKnife.findById;
 
-public final class NewListFragment extends DialogFragment {
+public final class NewListFragment extends RxAppCompatDialogFragment {
     public static NewListFragment newInstance() {
         return new NewListFragment();
     }
 
     private final PublishSubject<String> createClicked = PublishSubject.create();
 
-/*
+
     @Inject
-    TodoListDao todoListDao;
-*/
+    SchedulerProvider mSchedulerProvider;
 
     @Inject
     ViewModelProvider.Factory mViewModelFactory;
@@ -85,7 +84,7 @@ public final class NewListFragment extends DialogFragment {
                         return text.toString();
                     }
                 }) //
-                .observeOn(Schedulers.io())
+                .observeOn(mSchedulerProvider.io())
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String name) {

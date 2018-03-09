@@ -32,15 +32,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.squareup.sqlbrite3.BriteDatabase;
+import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -76,7 +80,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
 
     private Listener listener;
     private ListsAdapter adapter;
-    private Disposable disposable;
+    //private Disposable disposable;
 
     @Override
     public void onAttach(Context context) {
@@ -115,6 +119,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(R.layout.lists, container, false);
     }
 
@@ -131,6 +136,8 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         try {
             File dstFile = getViewModel().exportDecryption();
             Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
+
+            getActivity().finish();
         } catch (Exception e) {
             Log.e(TAG, "导出数据库失败!", e);
             Toast.makeText(getContext(), "导出数据库失败!", Toast.LENGTH_SHORT).show();
@@ -153,20 +160,23 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
 
         getActivity().setTitle("To-Do");
 
-    /*disposable = db.createQuery(ListsItem.TABLES, ListsItem.QUERY)
+        /*
+        disposable = db.createQuery(ListsItem.TABLES, ListsItem.QUERY)
         .mapToList(ListsItem.MAPPER) // 耗内存
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(adapter);*/
 
 
-        disposable = getViewModel().createQueryListsItems() // 省内存
-                .observeOn(AndroidSchedulers.mainThread())
+        /*disposable = */
+        getViewModel().createQueryListsItems() // 省内存
+                .compose(this.<List<ListsItem>>bindUntilEvent(FragmentEvent.PAUSE))
+                .observeOn(getSchedulerProvider().ui())
                 .subscribe(adapter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        disposable.dispose();
+        //disposable.dispose();  // RxLifecycle instead of
     }
 }

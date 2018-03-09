@@ -17,10 +17,13 @@ package com.example.sqlbrite.todo.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.sqlbrite.todo.R;
+import com.gg.rxbase.ui.RxBaseActivity;
+import com.trello.rxlifecycle2.components.support.RxFragmentActivity;
 
-public final class MainActivity extends FragmentActivity
+public final class MainActivity extends RxFragmentActivity
         implements ListsFragment.Listener, ItemsFragment.Listener {
 
     @Override
