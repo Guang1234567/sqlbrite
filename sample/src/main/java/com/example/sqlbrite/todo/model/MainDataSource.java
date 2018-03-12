@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * @author Guang1234567
@@ -14,7 +15,8 @@ import io.reactivex.Observable;
  */
 
 public interface MainDataSource {
-    Observable<List<ListsItem>> createQueryListsItems(final int max);
+
+    Observable<List<ListsItem>> createQueryListsItems(final long max);
 
     boolean completeTodoitem(long itemId, boolean complete);
 

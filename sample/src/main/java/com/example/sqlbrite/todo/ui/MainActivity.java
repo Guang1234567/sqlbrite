@@ -20,10 +20,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.sqlbrite.todo.R;
+import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.gg.rxbase.ui.RxBaseActivity;
 import com.trello.rxlifecycle2.components.support.RxFragmentActivity;
 
-public final class MainActivity extends RxFragmentActivity
+public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         implements ListsFragment.Listener, ItemsFragment.Listener {
 
     @Override
@@ -34,6 +36,11 @@ public final class MainActivity extends RxFragmentActivity
                     .add(android.R.id.content, ListsFragment.newInstance())
                     .commit();
         }
+    }
+
+    @Override
+    protected void toInject(BaseViewModelActivity<MainViewModel> self) {
+        TodoApp.getComponent(this).inject(this);
     }
 
     @Override

@@ -17,6 +17,7 @@ package com.example.sqlbrite.todo;
 
 import com.example.sqlbrite.todo.ui.ItemsFragment;
 import com.example.sqlbrite.todo.ui.ListsFragment;
+import com.example.sqlbrite.todo.ui.MainActivity;
 import com.example.sqlbrite.todo.ui.NewItemFragment;
 import com.example.sqlbrite.todo.ui.NewListFragment;
 
@@ -27,6 +28,8 @@ import dagger.Component;
 @Singleton
 @Component(modules = TodoModule.class)
 public interface TodoComponent {
+
+    void inject(MainActivity activity);
 
     void inject(ListsFragment fragment);
 

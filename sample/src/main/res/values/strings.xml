@@ -8,4 +8,5 @@
   <string name="new_list_hint">Name</string>
   <string name="new_item">New Item</string>
   <string name="new_item_hint">Description</string>
+  <string name="export_db">Export DB</string>
 </resources>

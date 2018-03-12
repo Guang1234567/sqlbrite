@@ -16,13 +16,9 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,29 +27,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
-import com.squareup.sqlbrite3.BriteDatabase;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.io.File;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.OnItemClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
@@ -75,8 +62,6 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     ListView listView;
     @BindView(android.R.id.empty)
     View emptyView;
-    @BindView(R.id.export_db)
-    Button btnExportDB;
 
     private Listener listener;
     private ListsAdapter adapter;
@@ -113,7 +98,29 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                         return true;
                     }
                 });
+
         MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+
+        item = menu.add(R.string.export_db)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        exportDB();
+                        return true;
+                    }
+                });
+
+        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+    }
+
+    private void exportDB() {
+        try {
+            File dstFile = getViewModel().exportDecryption();
+            Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "导出数据库失败!", e);
+            Toast.makeText(getContext(), "导出数据库失败!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -129,19 +136,6 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         ButterKnife.bind(this, view);
         listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
-    }
-
-    @OnClick(R.id.export_db)
-    void onExportDB(View btn) {
-        try {
-            File dstFile = getViewModel().exportDecryption();
-            Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
-
-            getActivity().finish();
-        } catch (Exception e) {
-            Log.e(TAG, "导出数据库失败!", e);
-            Toast.makeText(getContext(), "导出数据库失败!", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @OnItemClick(android.R.id.list)

@@ -29,11 +29,11 @@ public abstract class ListsItem implements Parcelable {
 
     public final static String ITEM_COUNT = "item_count";
 
-    abstract long id();
+    public abstract long id();
 
-    abstract String name();
+    public abstract String name();
 
-    abstract int itemCount();
+    public abstract int itemCount();
 
     public static Function<Cursor, ListsItem> MAPPER = new Function<Cursor, ListsItem>() {
         @Override

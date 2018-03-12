@@ -2,6 +2,8 @@ package com.example.sqlbrite.todo.model;
 
 import android.arch.persistence.db.wcdb.WcdbUtils;
 import android.os.Environment;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
@@ -9,11 +11,29 @@ import com.example.sqlbrite.todo.model.local.db.TodoListDao;
 import com.example.sqlbrite.todo.ui.ListsItem;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
+import com.squareup.sqlbrite3.SqlBrite;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * @author Guang1234567
@@ -22,7 +42,7 @@ import io.reactivex.Observable;
 
 public class MainRepository implements MainDataSource {
 
-    BriteDatabase mBriteDatabaseb;
+    private BriteDatabase mBriteDatabaseb;
 
     private final ListsItemDao mListsItemDao;
 
@@ -30,16 +50,34 @@ public class MainRepository implements MainDataSource {
 
     private final TodoItemDao mTodoItemDao;
 
+    final BehaviorSubject<List<ListsItem>> memory = BehaviorSubject.create();
+
+    @Inject
     public MainRepository(BriteDatabase briteDatabaseb, ListsItemDao listsItemDao, TodoListDao todoListDao, TodoItemDao todoItemDao) {
         mBriteDatabaseb = briteDatabaseb;
         mListsItemDao = listsItemDao;
         mTodoListDao = todoListDao;
         mTodoItemDao = todoItemDao;
+
+        Observable<List<ListsItem>> disk = mListsItemDao.createQueryListsItems(Long.MAX_VALUE,
+                new Predicate<SqlBrite.Query>() {
+                    @Override
+                    public boolean test(SqlBrite.Query query) throws Exception {
+                        return !memory.hasValue() || memory.hasObservers();
+                    }
+                })
+                .doOnNext(new Consumer<List<ListsItem>>() {
+                    @Override
+                    public void accept(List<ListsItem> listsItems) throws Exception {
+                        memory.onNext(listsItems);
+                    }
+                });
+        Disposable disposable = disk.subscribe();
     }
 
     @Override
-    public Observable<List<ListsItem>> createQueryListsItems(final int max) {
-        return mListsItemDao.createQueryListsItems(max); // 省内存
+    public Observable<List<ListsItem>> createQueryListsItems(final long max) {
+        return memory.take(max);
     }
 
     @Override

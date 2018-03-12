@@ -30,7 +30,7 @@ dependencies {
     implementation rootProject.ext.sqlbrite_wcdb_integration
 
     implementation rootProject.ext.androidArchViewModel
-    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation rootProject.ext.androidArchExtensions
 
     compile 'com.gg.rxbase:rxbase:1.1.1'
 }
@@ -70,6 +70,17 @@ android {
         debug {
             applicationIdSuffix '.development'
             signingConfig signingConfigs.debug
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion rootProject.ext.androidSupportVersion
+            }
         }
     }
 }
