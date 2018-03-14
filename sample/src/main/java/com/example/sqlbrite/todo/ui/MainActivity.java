@@ -16,31 +16,74 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.gg.rxbase.ui.RxBaseActivity;
-import com.trello.rxlifecycle2.components.support.RxFragmentActivity;
+import com.example.sqlbrite.todo.di.ActivityScopeComponent;
+import com.example.sqlbrite.todo.model.users.UserSession;
+import com.trello.rxlifecycle2.android.ActivityEvent;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         implements ListsFragment.Listener, ItemsFragment.Listener {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content, ListsFragment.newInstance())
-                    .commit();
+
+        getViewModel()
+                .login("id_user_lucy", "pwd_1234567")
+                .compose(this.<UserSession>bindUntilEvent(ActivityEvent.DESTROY))
+                .flatMap(new Function<UserSession, Observable<UserSession>>() {
+                    @Override
+                    public Observable<UserSession> apply(UserSession userSession) throws Exception {
+                        return UserSession.FAIL.equals(userSession) ?
+                                Observable.<UserSession>error(new AssertionError())
+                                : Observable.just(userSession);
+                    }
+                })
+                .observeOn(getSchedulerProvider().ui())
+                .subscribe(new Consumer<UserSession>() {
+                               @Override
+                               public void accept(UserSession userSession) throws Exception {
+                                   Toast.makeText(MainActivity.this, "登陆成功!\n进入界面!", Toast.LENGTH_SHORT).show();
+
+                                   if (savedInstanceState == null) {
+                                       getSupportFragmentManager().beginTransaction()
+                                               .add(android.R.id.content, ListsFragment.newInstance())
+                                               .commit();
+                                   }
+                               }
+                           },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Toast.makeText(MainActivity.this, "登陆失败!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing()) {
+            getViewModel().logout();
         }
     }
 
     @Override
-    protected void toInject(BaseViewModelActivity<MainViewModel> self) {
-        TodoApp.getComponent(this).inject(this);
+    protected void toInject(ActivityScopeComponent component) {
+        component.inject(this);
     }
 
     @Override

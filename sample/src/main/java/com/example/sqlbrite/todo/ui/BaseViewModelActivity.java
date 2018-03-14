@@ -5,6 +5,10 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
+import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.di.ActivityScopeComponent;
+import com.example.sqlbrite.todo.di.DaggerActivityScopeComponent;
+import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.gg.rxbase.ui.RxBaseActivity;
 
@@ -30,14 +34,16 @@ public abstract class BaseViewModelActivity<VIEWMODEL extends ViewModel> extends
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        toInject(this);
+        toInject(
+                InjectHelper.createActivityScopeComponent(this, this)
+        );
 
         ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
         Class viewModelClazz = (Class) type.getActualTypeArguments()[0];
         mViewModel = (VIEWMODEL) ViewModelProviders.of(this, mViewModelFactory).get(viewModelClazz);
     }
 
-    protected abstract void toInject(BaseViewModelActivity<VIEWMODEL> self);
+    protected abstract void toInject(ActivityScopeComponent component);
 
     protected VIEWMODEL getViewModel() {
         return mViewModel;

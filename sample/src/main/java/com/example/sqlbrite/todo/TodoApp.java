@@ -18,25 +18,33 @@ package com.example.sqlbrite.todo;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.sqlbrite.todo.di.TodoComponent;
-import com.example.sqlbrite.todo.di.TodoModule;
+import com.example.sqlbrite.todo.di.AppScopeComponent;
+import com.example.sqlbrite.todo.di.AppScopeModule;
+import com.example.sqlbrite.todo.di.DaggerAppScopeComponent;
+import com.example.sqlbrite.todo.di.InjectHelper;
+import com.example.sqlbrite.todo.di.UserScopeComponent;
 
 import timber.log.Timber;
 
 public final class TodoApp extends Application {
-  private TodoComponent mainComponent;
+    private AppScopeComponent mAppScopeComponent;
 
-  @Override public void onCreate() {
-    super.onCreate();
+    private UserScopeComponent mUserScopeComponent;
 
-    if (BuildConfig.DEBUG) {
-      Timber.plant(new Timber.DebugTree());
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
+        mAppScopeComponent = DaggerAppScopeComponent.builder().appScopeModule(new AppScopeModule(this)).build();
+
+        mUserScopeComponent = InjectHelper.createUserScopeComponent(this);
     }
 
-    mainComponent = DaggerTodoComponent.builder().todoModule(new TodoModule(this)).build();
-  }
-
-  public static TodoComponent getComponent(Context context) {
-    return ((TodoApp) context.getApplicationContext()).mainComponent;
-  }
+    public static AppScopeComponent getAppScopeComponent(Context context) {
+        return ((TodoApp) context.getApplicationContext()).mAppScopeComponent;
+    }
 }

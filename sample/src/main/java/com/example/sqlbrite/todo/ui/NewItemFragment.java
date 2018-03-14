@@ -31,6 +31,7 @@ import android.widget.EditText;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
@@ -40,7 +41,6 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 import static butterknife.ButterKnife.findById;
@@ -73,9 +73,9 @@ public final class NewItemFragment extends RxAppCompatDialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        TodoApp.getComponent(activity).inject(this);
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        InjectHelper.createFragmentScopeComponent(context, getActivity(), this).inject(this);
     }
 
     @NonNull

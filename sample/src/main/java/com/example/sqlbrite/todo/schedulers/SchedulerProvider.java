@@ -13,6 +13,15 @@ public interface SchedulerProvider {
     Scheduler computation();
 
     @NonNull
+    Scheduler single();
+
+    @NonNull
+    Scheduler newThread();
+
+    @NonNull
+    Scheduler trampoline();
+
+    @NonNull
     Scheduler io();
 
     @NonNull

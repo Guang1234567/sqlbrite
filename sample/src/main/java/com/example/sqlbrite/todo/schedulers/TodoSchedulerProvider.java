@@ -20,6 +20,24 @@ public class TodoSchedulerProvider implements SchedulerProvider {
 
     @Override
     @NonNull
+    public Scheduler single() {
+        return Schedulers.single();
+    }
+
+    @Override
+    @NonNull
+    public Scheduler newThread() {
+        return Schedulers.newThread();
+    }
+
+    @Override
+    @NonNull
+    public Scheduler trampoline() {
+        return Schedulers.trampoline();
+    }
+
+    @Override
+    @NonNull
     public Scheduler io() {
         return Schedulers.io();
     }
@@ -30,14 +48,14 @@ public class TodoSchedulerProvider implements SchedulerProvider {
         return AndroidSchedulers.mainThread();
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Scheduler viewModel() {
         return Schedulers.single();
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Scheduler database() {
         return Schedulers.io();
     }

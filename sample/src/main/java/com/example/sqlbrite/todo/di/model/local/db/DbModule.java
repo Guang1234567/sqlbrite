@@ -20,6 +20,7 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.wcdb.WcdbSQLiteOpenHelperFactory;
 
+import com.example.sqlbrite.todo.di.UserScope;
 import com.example.sqlbrite.todo.model.local.db.DbCallback;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
 import com.example.sqlbrite.todo.model.local.db.TodoListDao;
@@ -37,7 +38,7 @@ import timber.log.Timber;
 @Module
 public final class DbModule {
     @Provides
-    @Singleton
+    @UserScope
     SqlBrite provideSqlBrite() {
         return new SqlBrite.Builder()
                 .logger(new SqlBrite.Logger() {
@@ -50,7 +51,7 @@ public final class DbModule {
     }
 
     @Provides
-    @Singleton
+    @UserScope
     SupportSQLiteOpenHelper provideSupportSQLiteOpenHelper(Application application) {
         // 1) android native sqlite, no cipher
         /*
@@ -108,7 +109,7 @@ public final class DbModule {
     }
 
     @Provides
-    @Singleton
+    @UserScope
     BriteDatabase provideDatabase(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
         BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(helper, schedulerProvider.database());
         briteDatabase.setLoggingEnabled(true);
@@ -116,25 +117,25 @@ public final class DbModule {
     }
 
     /*@Provides
-    @Singleton
+    @UserScope
     BriteDatabaseProvider provideDatabaseProvider(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
         return new BriteDatabaseProvider(sqlBrite, helper, schedulerProvider.database());
     }*/
 
     @Provides
-    @Singleton
+    @UserScope
     TodoListDao provideTodoListDao(BriteDatabase db) {
         return new TodoListDao(db);
     }
 
     @Provides
-    @Singleton
+    @UserScope
     TodoItemDao provideTodoItemDao(BriteDatabase db) {
         return new TodoItemDao(db);
     }
 
     @Provides
-    @Singleton
+    @UserScope
     ListsItemDao provideListsItemDao(BriteDatabase db) {
         return new ListsItemDao(db);
     }

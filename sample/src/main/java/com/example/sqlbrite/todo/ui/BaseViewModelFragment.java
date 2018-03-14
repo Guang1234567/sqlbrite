@@ -9,6 +9,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.di.DaggerActivityScopeComponent;
+import com.example.sqlbrite.todo.di.DaggerFragmentScopeComponent;
+import com.example.sqlbrite.todo.di.FragmentScopeComponent;
+import com.example.sqlbrite.todo.di.FragmentScopeModule;
+import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.gg.rxbase.ui.RxBaseFragment;
 
@@ -34,10 +39,12 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        toInject(this);
+        toInject(
+                InjectHelper.createFragmentScopeComponent(context, getActivity(), this)
+        );
     }
 
-    protected abstract void toInject(BaseViewModelFragment<VIEWMODEL> self);
+    protected abstract void toInject(FragmentScopeComponent component);
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

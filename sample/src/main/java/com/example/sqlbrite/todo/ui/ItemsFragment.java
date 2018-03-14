@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
@@ -42,11 +43,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
 import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
@@ -98,8 +96,8 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
     }
 
     @Override
-    protected void toInject(BaseViewModelFragment<MainViewModel> self) {
-        TodoApp.getComponent(getContext()).inject(this);
+    protected void toInject(FragmentScopeComponent component) {
+        component.inject(this);
     }
 
     @Override

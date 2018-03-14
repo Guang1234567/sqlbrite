@@ -19,13 +19,15 @@ package com.example.sqlbrite.todo.di.controler;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.sqlbrite.todo.di.UserScope;
+
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-@Singleton
+@UserScope
 public class TodoViewModelFactory implements ViewModelProvider.Factory {
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 

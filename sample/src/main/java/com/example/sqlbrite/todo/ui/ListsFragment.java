@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.io.File;
@@ -82,8 +83,8 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     }
 
     @Override
-    protected void toInject(BaseViewModelFragment<MainViewModel> self) {
-        TodoApp.getComponent(self.getContext()).inject(this);
+    protected void toInject(FragmentScopeComponent component) {
+        component.inject(this);
     }
 
     @Override

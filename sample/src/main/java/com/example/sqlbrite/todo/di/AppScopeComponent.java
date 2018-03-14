@@ -15,27 +15,23 @@
  */
 package com.example.sqlbrite.todo.di;
 
-import com.example.sqlbrite.todo.ui.ItemsFragment;
-import com.example.sqlbrite.todo.ui.ListsFragment;
-import com.example.sqlbrite.todo.ui.MainActivity;
-import com.example.sqlbrite.todo.ui.NewItemFragment;
-import com.example.sqlbrite.todo.ui.NewListFragment;
+import android.app.Application;
+
+import com.example.sqlbrite.todo.model.users.UserManager;
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.reactivex.Observable;
 
 @Singleton
-@Component(modules = TodoModule.class)
-public interface TodoComponent {
+@Component(modules = AppScopeModule.class)
+public interface AppScopeComponent {
 
-    void inject(MainActivity activity);
+    Application application();
 
-    void inject(ListsFragment fragment);
+    SchedulerProvider schedulerProvider();
 
-    void inject(ItemsFragment fragment);
-
-    void inject(NewItemFragment fragment);
-
-    void inject(NewListFragment fragment);
+    Observable<UserManager> userManager();
 }
