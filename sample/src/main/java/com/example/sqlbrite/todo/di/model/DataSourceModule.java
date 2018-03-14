@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.model;
+package com.example.sqlbrite.todo.di.model;
 
-import com.example.sqlbrite.todo.model.local.db.DbModule;
+import com.example.sqlbrite.todo.di.model.local.db.DbModule;
+import com.example.sqlbrite.todo.model.MainDataSource;
+import com.example.sqlbrite.todo.model.MainRepository;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
 import com.example.sqlbrite.todo.model.local.db.TodoListDao;
-import com.example.sqlbrite.todo.model.local.preferences.PreferencesModule;
+import com.example.sqlbrite.todo.di.model.local.preferences.PreferencesModule;
 import com.example.sqlbrite.todo.model.remote.NetModule;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;

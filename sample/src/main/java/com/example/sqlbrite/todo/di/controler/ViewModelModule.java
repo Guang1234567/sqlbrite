@@ -1,7 +1,9 @@
-package com.example.sqlbrite.todo.controler;
+package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+
+import com.example.sqlbrite.todo.controler.MainViewModel;
 
 import dagger.Binds;
 import dagger.Module;

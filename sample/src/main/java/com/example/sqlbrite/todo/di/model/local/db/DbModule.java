@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.model.local.db;
+package com.example.sqlbrite.todo.di.model.local.db;
 
 import android.app.Application;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.wcdb.WcdbSQLiteOpenHelperFactory;
 
+import com.example.sqlbrite.todo.model.local.db.DbCallback;
+import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
+import com.example.sqlbrite.todo.model.local.db.TodoListDao;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;

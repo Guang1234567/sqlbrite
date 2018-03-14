@@ -17,6 +17,10 @@ package com.example.sqlbrite.todo;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.example.sqlbrite.todo.di.TodoComponent;
+import com.example.sqlbrite.todo.di.TodoModule;
+
 import timber.log.Timber;
 
 public final class TodoApp extends Application {

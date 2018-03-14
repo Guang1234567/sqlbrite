@@ -20,7 +20,7 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
 
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_FAIL;
 
-final class DbCallback extends SupportSQLiteOpenHelper.Callback {
+public final class DbCallback extends SupportSQLiteOpenHelper.Callback {
   private static final int VERSION = 1;
 
   private static final String CREATE_LIST = ""
@@ -39,7 +39,7 @@ final class DbCallback extends SupportSQLiteOpenHelper.Callback {
   private static final String CREATE_ITEM_LIST_ID_INDEX =
       "CREATE INDEX item_list_id ON " + TodoItem.TABLE + " (" + TodoItem.LIST_ID + ")";
 
-  DbCallback() {
+  public DbCallback() {
     super(VERSION);
   }
 

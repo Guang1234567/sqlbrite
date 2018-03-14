@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.model.local.preferences;
+package com.example.sqlbrite.todo.di.schedulers;
+
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
+import com.example.sqlbrite.todo.schedulers.TodoSchedulerProvider;
+import com.example.sqlbrite.todo.ui.ListsItemDao;
+import com.squareup.sqlbrite3.BriteDatabase;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
+import dagger.Provides;
 
 @Module
-public final class PreferencesModule {
+public final class SchedulerModule {
+
+    @Provides
+    @Singleton
+    SchedulerProvider provideSchedulerProvider() {
+        return new TodoSchedulerProvider();
+    }
 }

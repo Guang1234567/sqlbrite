@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo;
+package com.example.sqlbrite.todo.di;
 
 import android.app.Application;
 
-import com.example.sqlbrite.todo.controler.ViewModelModule;
-import com.example.sqlbrite.todo.model.DataSourceModule;
-import com.example.sqlbrite.todo.schedulers.SchedulerModule;
+import com.example.sqlbrite.todo.di.controler.ViewModelModule;
+import com.example.sqlbrite.todo.di.model.DataSourceModule;
+import com.example.sqlbrite.todo.di.schedulers.SchedulerModule;
 
 import javax.inject.Singleton;
 

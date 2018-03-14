@@ -41,9 +41,8 @@ public class ListsItemDao {
             + " LEFT OUTER JOIN " + TodoItem.TABLE + " AS " + ALIAS_ITEM + " ON " + LIST_ID + " = " + ITEM_LIST_ID
             + " GROUP BY " + LIST_ID;
 
-    public Observable<List<ListsItem>> createQueryListsItems(final long max, Predicate<SqlBrite.Query> filter) {
+    public Observable<List<ListsItem>> createQueryListsItems(final long max) {
         return mDatabase.createQuery(TABLES, QUERY)
-                .filter(filter)
                 .flatMap(new Function<SqlBrite.Query, Observable<List<ListsItem>>>() {
                     @Override
                     public Observable<List<ListsItem>> apply(SqlBrite.Query query) throws Exception {

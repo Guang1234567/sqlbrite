@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.sqlbrite.todo.schedulers;
+package com.example.sqlbrite.todo.di;
 
-import com.example.sqlbrite.todo.ui.ListsItemDao;
-import com.squareup.sqlbrite3.BriteDatabase;
+import com.example.sqlbrite.todo.ui.ItemsFragment;
+import com.example.sqlbrite.todo.ui.ListsFragment;
+import com.example.sqlbrite.todo.ui.MainActivity;
+import com.example.sqlbrite.todo.ui.NewItemFragment;
+import com.example.sqlbrite.todo.ui.NewListFragment;
 
 import javax.inject.Singleton;
 
-import dagger.Module;
-import dagger.Provides;
+import dagger.Component;
 
-@Module
-public final class SchedulerModule {
+@Singleton
+@Component(modules = TodoModule.class)
+public interface TodoComponent {
 
-    @Provides
-    @Singleton
-    SchedulerProvider provideSchedulerProvider() {
-        return new TodoSchedulerProvider();
-    }
+    void inject(MainActivity activity);
+
+    void inject(ListsFragment fragment);
+
+    void inject(ItemsFragment fragment);
+
+    void inject(NewItemFragment fragment);
+
+    void inject(NewListFragment fragment);
 }

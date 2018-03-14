@@ -78,6 +78,10 @@ class BriteDatabaseProvider {
 
                 BriteDatabase briteDatabase = openBriteDatabase();
                 e.onNext(briteDatabase);
+
+                /*if (!e.isDisposed()) {
+                    e.onComplete();
+                }*/
             }
         }).subscribeOn(mScheduler);
     }
