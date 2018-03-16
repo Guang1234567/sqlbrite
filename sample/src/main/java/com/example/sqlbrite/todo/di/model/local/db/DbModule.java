@@ -29,7 +29,7 @@ import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 
-import javax.inject.Singleton;
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -37,6 +37,20 @@ import timber.log.Timber;
 
 @Module
 public final class DbModule {
+
+    private final String mDatabaseName;
+
+    public DbModule(String databaseName) {
+        mDatabaseName = databaseName;
+    }
+
+    @Provides
+    @UserScope
+    @Named("database_name")
+    String provideDatabaseName() {
+        return mDatabaseName;
+    }
+
     @Provides
     @UserScope
     SqlBrite provideSqlBrite() {
@@ -52,7 +66,7 @@ public final class DbModule {
 
     @Provides
     @UserScope
-    SupportSQLiteOpenHelper provideSupportSQLiteOpenHelper(Application application) {
+    SupportSQLiteOpenHelper provideSupportSQLiteOpenHelper(Application application, @Named("database_name") String databaseName) {
         // 1) android native sqlite, no cipher
         /*
         Configuration configuration = Configuration.builder(application)
@@ -100,7 +114,7 @@ public final class DbModule {
 
         // 4) wcdb base on SQLCipher, has cipher
         Configuration configuration_wcdb_cipher = Configuration.builder(application)
-                .name("todo_wcdb_cipher.db")
+                .name("todo_wcdb_cipher_" + databaseName + ".db")
                 .callback(new DbCallback())
                 .build();
 

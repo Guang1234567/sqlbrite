@@ -17,6 +17,7 @@ package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -83,7 +84,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     }
 
     @Override
-    protected void toInject(FragmentScopeComponent component) {
+    protected void injectOnAttach(FragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -107,6 +108,18 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         exportDB();
+                        return true;
+                    }
+                });
+
+        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+
+        item = menu.add(R.string.setting)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(getContext(), SystemSettingActivity.class);
+                        startActivity(intent);
                         return true;
                     }
                 });

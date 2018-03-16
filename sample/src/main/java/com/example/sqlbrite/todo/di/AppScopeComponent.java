@@ -17,13 +17,18 @@ package com.example.sqlbrite.todo.di;
 
 import android.app.Application;
 
+import com.example.sqlbrite.todo.controler.LoginViewControler;
+import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
+import com.example.sqlbrite.todo.ui.SplashActivity;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.reactivex.Observable;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
 
 @Singleton
 @Component(modules = AppScopeModule.class)
@@ -33,5 +38,19 @@ public interface AppScopeComponent {
 
     SchedulerProvider schedulerProvider();
 
-    Observable<UserManager> userManager();
+    Retrofit retrofit();
+
+    @Named("cached")
+    OkHttpClient okHttpClient();
+
+    @Named("non_cached")
+    OkHttpClient okHttpClientWithoutCache();
+
+    GitHubApiInterface gitHubApiInterface();
+
+    UserManager userManager();
+
+    LoginViewControler loginViewControler();
+
+    void inject(SplashActivity activity);
 }

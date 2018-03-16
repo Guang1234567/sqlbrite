@@ -6,13 +6,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
-import com.example.sqlbrite.todo.TodoApp;
-import com.example.sqlbrite.todo.di.DaggerActivityScopeComponent;
-import com.example.sqlbrite.todo.di.DaggerFragmentScopeComponent;
 import com.example.sqlbrite.todo.di.FragmentScopeComponent;
-import com.example.sqlbrite.todo.di.FragmentScopeModule;
 import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.gg.rxbase.ui.RxBaseFragment;
@@ -28,6 +23,8 @@ import javax.inject.Inject;
 
 public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends RxBaseFragment {
 
+    private FragmentScopeComponent mFragmentScopeComponent;
+
     @Inject
     SchedulerProvider mSchedulerProvider;
 
@@ -39,12 +36,15 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        toInject(
-                InjectHelper.createFragmentScopeComponent(context, getActivity(), this)
-        );
+        mFragmentScopeComponent = InjectHelper.instance().createFragmentScopeComponent(getActivity(), this);
+        injectOnAttach(mFragmentScopeComponent);
     }
 
-    protected abstract void toInject(FragmentScopeComponent component);
+    protected FragmentScopeComponent getFragmentScopeComponent() {
+        return mFragmentScopeComponent;
+    }
+
+    protected abstract void injectOnAttach(FragmentScopeComponent component);
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

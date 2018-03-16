@@ -2,6 +2,7 @@ package com.example.sqlbrite.todo.di;
 
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
 import dagger.Component;
@@ -11,6 +12,8 @@ import dagger.Component;
 public interface UserScopeComponent {
 
     SchedulerProvider schedulerProvider();
+
+    GitHubApiInterface gitHubApiInterface();
 
     ViewModelProvider.Factory viewModelProviderFactory();
 }

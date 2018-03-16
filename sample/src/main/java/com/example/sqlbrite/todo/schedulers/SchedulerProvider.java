@@ -32,4 +32,7 @@ public interface SchedulerProvider {
 
     @NonNull
     Scheduler database();
+
+    @NonNull
+    Scheduler net();
 }

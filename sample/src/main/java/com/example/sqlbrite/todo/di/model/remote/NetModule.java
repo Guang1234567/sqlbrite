@@ -15,8 +15,96 @@
  */
 package com.example.sqlbrite.todo.di.model.remote;
 
-import dagger.Module;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 
-@Module
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
+import com.ryanharter.auto.value.gson.GenerateTypeAdapter;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+@Module(
+        includes = {
+                TodoApiModule.class
+        }
+)
 public final class NetModule {
+    private final static String TAG = "NetModule";
+
+    String mBaseUrl;
+
+    // Constructor needs one parameter to instantiate.
+    public NetModule(String baseUrl) {
+        this.mBaseUrl = baseUrl;
+    }
+
+    // Dagger will only look for methods annotated with @Provides
+    @Provides
+    @Singleton
+    // Application reference must come from AppScopeModule.class
+    SharedPreferences providesSharedPreferences(Application application) {
+        return application.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+    }
+
+    @Provides
+    @Singleton
+    Cache provideOkHttpCache(Application application) {
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(application.getCacheDir(), cacheSize);
+        return cache;
+    }
+
+    @Provides
+    @Singleton
+    TypeAdapterFactory provideTypeAdapterFactory() {
+        return MyGsonTypeAdapterFactory.create();
+    }
+
+    @Provides
+    @Singleton
+    Gson provideGson(TypeAdapterFactory typeAdapterFactory) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
+        gsonBuilder.registerTypeAdapterFactory(typeAdapterFactory);
+        return gsonBuilder.create();
+    }
+
+    @Provides
+    @Singleton
+    @Named("cached")
+    OkHttpClient provideOkHttpClient(Cache cache) {
+        return new OkHttpClient.Builder().cache(cache).build();
+    }
+
+    @Provides
+    @Singleton
+    @Named("non_cached")
+    OkHttpClient provideOkHttpClientWithoutCache() {
+        return new OkHttpClient.Builder().build();
+    }
+
+    @Provides
+    @Singleton
+    Retrofit provideRetrofit(Gson gson, @Named("cached") OkHttpClient okHttpClient) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(mBaseUrl)
+                .client(okHttpClient)
+                .build();
+        return retrofit;
+    }
 }

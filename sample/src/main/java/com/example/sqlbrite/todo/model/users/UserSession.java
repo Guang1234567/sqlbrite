@@ -1,6 +1,10 @@
 package com.example.sqlbrite.todo.model.users;
 
+import com.example.sqlbrite.todo.di.UserScopeComponent;
 import com.google.auto.value.AutoValue;
+
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 /**
  * @author Administrator
@@ -10,55 +14,12 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class UserSession {
 
-    public static final UserSession FAIL = new NullUserSession();
-
-    private boolean mIsAlive = false;
-
-    public abstract String name();
-
-    public abstract String token();
+    public abstract User user();
 
     abstract UserManager userManager();
 
-    static UserSession login(String name, String token, UserManager userManager) {
-        UserSession s =  new AutoValue_UserSession(name, token, userManager);
-        s.mIsAlive = true;
+    public static UserSession create(User user, UserManager userManager) {
+        UserSession s = new AutoValue_UserSession(user, userManager);
         return s;
-    }
-
-    public void logout() {
-        UserManager mgr = userManager();
-        if (mgr != null) {
-            mgr.logout();
-        }
-
-        mIsAlive = false;
-    }
-
-    public boolean isAlive() {
-        return mIsAlive;
-    }
-
-    private static class NullUserSession extends UserSession {
-
-        @Override
-        public String name() {
-            return "";
-        }
-
-        @Override
-        public String token() {
-            return "";
-        }
-
-        @Override
-        UserManager userManager() {
-            return null;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return super.equals(obj) || obj == null;
-        }
     }
 }

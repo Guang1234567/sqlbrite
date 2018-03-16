@@ -16,56 +16,25 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.ActivityScopeComponent;
-import com.example.sqlbrite.todo.model.users.UserSession;
-import com.trello.rxlifecycle2.android.ActivityEvent;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         implements ListsFragment.Listener, ItemsFragment.Listener {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getViewModel()
-                .login("id_user_lucy", "pwd_1234567")
-                .compose(this.<UserSession>bindUntilEvent(ActivityEvent.DESTROY))
-                .flatMap(new Function<UserSession, Observable<UserSession>>() {
-                    @Override
-                    public Observable<UserSession> apply(UserSession userSession) throws Exception {
-                        return UserSession.FAIL.equals(userSession) ?
-                                Observable.<UserSession>error(new AssertionError())
-                                : Observable.just(userSession);
-                    }
-                })
-                .observeOn(getSchedulerProvider().ui())
-                .subscribe(new Consumer<UserSession>() {
-                               @Override
-                               public void accept(UserSession userSession) throws Exception {
-                                   Toast.makeText(MainActivity.this, "登陆成功!\n进入界面!", Toast.LENGTH_SHORT).show();
-
-                                   if (savedInstanceState == null) {
-                                       getSupportFragmentManager().beginTransaction()
-                                               .add(android.R.id.content, ListsFragment.newInstance())
-                                               .commit();
-                                   }
-                               }
-                           },
-                        new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(MainActivity.this, "登陆失败!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(android.R.id.content, ListsFragment.newInstance())
+                    .commit();
+        }
     }
 
     @Override
@@ -77,12 +46,11 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
     protected void onPause() {
         super.onPause();
         if (isFinishing()) {
-            getViewModel().logout();
         }
     }
 
     @Override
-    protected void toInject(ActivityScopeComponent component) {
+    protected void injectOnCreate(ActivityScopeComponent component) {
         component.inject(this);
     }
 

@@ -17,16 +17,13 @@ package com.example.sqlbrite.todo.di.model;
 
 import com.example.sqlbrite.todo.di.UserScope;
 import com.example.sqlbrite.todo.di.model.local.db.DbModule;
+import com.example.sqlbrite.todo.di.model.local.preferences.PreferencesModule;
 import com.example.sqlbrite.todo.model.MainDataSource;
 import com.example.sqlbrite.todo.model.MainRepository;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
 import com.example.sqlbrite.todo.model.local.db.TodoListDao;
-import com.example.sqlbrite.todo.di.model.local.preferences.PreferencesModule;
-import com.example.sqlbrite.todo.model.remote.NetModule;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,7 +32,6 @@ import dagger.Provides;
         includes = {
                 DbModule.class,
                 PreferencesModule.class,
-                NetModule.class
         }
 )
 public final class UserScopeModelModule {

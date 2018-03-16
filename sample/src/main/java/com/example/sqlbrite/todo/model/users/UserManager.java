@@ -1,15 +1,19 @@
 package com.example.sqlbrite.todo.model.users;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
 
+import com.example.sqlbrite.todo.di.InjectHelper;
+import com.example.sqlbrite.todo.di.UserScopeComponent;
+import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
  * @author Administrator
@@ -18,59 +22,70 @@ import io.reactivex.ObservableOnSubscribe;
 
 public interface UserManager {
 
-    UserSession login(String userId, String password);
+    Single<UserSession> startSessionForUser(String username);
 
-    void logout();
+    UserScopeComponent getUserScopeComponent();
 
-    UserSession curSession();
-
-    Observable<UserManager> toObservable();
+    Completable closeUserSession(UserSession userSession);
 
     class UserManagerImpl implements UserManager {
 
+        private final GitHubApiInterface mGitHubApiInterface;
+
         private final SchedulerProvider mSchedulerProvider;
 
-        private UserSession mUserSession;
+        private UserScopeComponent mUserScopeComponent;
 
         @Inject
-        public UserManagerImpl(Application application, SchedulerProvider schedulerProvider) {
+        public UserManagerImpl(Application application, GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
+            mGitHubApiInterface = gitHubApiInterface;
             mSchedulerProvider = schedulerProvider;
-
-            mUserSession = UserSession.FAIL;
-        }
-
-        @NonNull
-        @Override
-        public UserSession login(String userId, String password) {
-            if (UserSession.FAIL.equals(mUserSession)) {
-                // TODO login here
-                mUserSession = UserSession.login(userId, password, this);
-            }
-            return mUserSession;
         }
 
         @Override
-        public void logout() {
-            mUserSession = UserSession.FAIL;
+        public Single<UserSession> startSessionForUser(String userId) {
+            return mGitHubApiInterface.login(userId)
+                    .subscribeOn(mSchedulerProvider.net())
+                    .onErrorReturnItem(User.create(userId, "伪造的人"))
+                    .observeOn(mSchedulerProvider.ui())
+                    .flatMap(new Function<User, Single<UserSession>>() {
+                        @Override
+                        public Single<UserSession> apply(User user) throws Exception {
+                            return Single.just(UserSession.create(user, UserManagerImpl.this));
+                        }
+                    })
+                    .doOnSuccess(new Consumer<UserSession>() {
+                        @Override
+                        public void accept(UserSession userSession) throws Exception {
+                            onStartUserSession(userSession);
+                        }
+                    });
         }
 
-        @NonNull
         @Override
-        public UserSession curSession() {
-            return mUserSession;
+        public UserScopeComponent getUserScopeComponent() {
+            return mUserScopeComponent;
         }
 
         @Override
-        public Observable<UserManager> toObservable() {
-            return Observable.create(new ObservableOnSubscribe<UserManager>() {
-                @Override
-                public void subscribe(ObservableEmitter<UserManager> e) throws Exception {
-                    e.onNext(UserManagerImpl.this);
-                    if (!e.isDisposed()) {
-                        e.onComplete();
-                    }
-                }
-            });
+        public Completable closeUserSession(final UserSession userSession) {
+            return mGitHubApiInterface.logout(userSession.user().id())
+                    .subscribeOn(mSchedulerProvider.net())
+                    .observeOn(mSchedulerProvider.ui())
+                    .doOnComplete(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            oncloseUserSession(userSession);
+                        }
+                    });
+        }
+
+        private void onStartUserSession(UserSession userSession) {
+            mUserScopeComponent = InjectHelper.instance().createUserScopeComponent(userSession.user().id());
+        }
+
+        public void  oncloseUserSession(UserSession userSession) {
+            mUserScopeComponent = null;
         }
     }
 }

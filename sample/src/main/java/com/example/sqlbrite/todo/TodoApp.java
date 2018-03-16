@@ -16,20 +16,16 @@
 package com.example.sqlbrite.todo;
 
 import android.app.Application;
-import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
 import com.example.sqlbrite.todo.di.AppScopeComponent;
-import com.example.sqlbrite.todo.di.AppScopeModule;
-import com.example.sqlbrite.todo.di.DaggerAppScopeComponent;
 import com.example.sqlbrite.todo.di.InjectHelper;
-import com.example.sqlbrite.todo.di.UserScopeComponent;
 
 import timber.log.Timber;
 
-public final class TodoApp extends Application {
-    private AppScopeComponent mAppScopeComponent;
+public final class TodoApp extends MultiDexApplication {
 
-    private UserScopeComponent mUserScopeComponent;
+    private AppScopeComponent mAppScopeComponent;
 
     @Override
     public void onCreate() {
@@ -39,12 +35,7 @@ public final class TodoApp extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        mAppScopeComponent = DaggerAppScopeComponent.builder().appScopeModule(new AppScopeModule(this)).build();
-
-        mUserScopeComponent = InjectHelper.createUserScopeComponent(this);
-    }
-
-    public static AppScopeComponent getAppScopeComponent(Context context) {
-        return ((TodoApp) context.getApplicationContext()).mAppScopeComponent;
+        mAppScopeComponent = InjectHelper.instance()
+                .init(this);
     }
 }

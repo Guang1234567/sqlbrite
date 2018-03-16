@@ -5,6 +5,7 @@ dependencies {
     implementation rootProject.ext.supportAnnotations
 
     implementation rootProject.ext.dagger
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     annotationProcessor rootProject.ext.daggerCompiler
 
     implementation rootProject.ext.butterKnifeRuntime
@@ -16,6 +17,9 @@ dependencies {
 
     compileOnly rootProject.ext.autoValue
     annotationProcessor rootProject.ext.autoValue
+    compileOnly rootProject.ext.autoValueGsonAnnotations
+    annotationProcessor rootProject.ext.autoValueGson
+    compileOnly rootProject.ext.autoValueParcelAdapter
     annotationProcessor rootProject.ext.autoValueParcel
 
     implementation project(':sqlbrite')
@@ -32,6 +36,14 @@ dependencies {
     implementation rootProject.ext.androidArchViewModel
     implementation rootProject.ext.androidArchExtensions
 
+    implementation rootProject.ext.retrofit_runtime
+    implementation rootProject.ext.retrofit_gson
+    implementation rootProject.ext.retrofit_mock
+    implementation rootProject.ext.retrofit_rxAdapter
+    implementation rootProject.ext.okhttp_logging_interceptor
+
+    implementation 'com.android.support:multidex:1.0.3'
+
     compile 'com.gg.rxbase:rxbase:1.1.1'
 }
 
@@ -45,7 +57,8 @@ android {
     lintOptions {
         textOutput 'stdout'
         textReport true
-        ignore 'InvalidPackage' // Provided AutoValue pulls in Guava and friends. Doesn't end up in APK.
+        ignore 'InvalidPackage'
+        // Provided AutoValue pulls in Guava and friends. Doesn't end up in APK.
     }
 
     defaultConfig {
@@ -55,6 +68,16 @@ android {
 
         versionCode 1
         versionName '1.0'
+
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        'autovaluegson.defaultCollectionsToEmpty'        : 'true',
+                        'autovaluegson.mutableAdaptersWithDefaultSetters': 'true'
+                ]
+            }
+        }
     }
 
     signingConfigs {
@@ -73,6 +96,8 @@ android {
         }
     }
 }
+
+
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

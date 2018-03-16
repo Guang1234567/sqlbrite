@@ -59,4 +59,10 @@ public class TodoSchedulerProvider implements SchedulerProvider {
     public Scheduler database() {
         return Schedulers.io();
     }
+
+    @Override
+    @NonNull
+    public Scheduler net() {
+        return Schedulers.io();
+    }
 }

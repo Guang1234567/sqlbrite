@@ -63,7 +63,7 @@ public final class NewListFragment extends RxAppCompatDialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        InjectHelper.createFragmentScopeComponent(context, getActivity(), this).inject(this);
+        InjectHelper.instance().createFragmentScopeComponent(getActivity(), this).inject(this);
     }
 
     @NonNull

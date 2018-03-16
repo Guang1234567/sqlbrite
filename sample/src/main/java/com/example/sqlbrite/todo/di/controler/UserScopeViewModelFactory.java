@@ -25,14 +25,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 
 @UserScope
-public class TodoViewModelFactory implements ViewModelProvider.Factory {
+public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 
     @Inject
-    public TodoViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+    public UserScopeViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
         this.creators = creators;
     }
 
