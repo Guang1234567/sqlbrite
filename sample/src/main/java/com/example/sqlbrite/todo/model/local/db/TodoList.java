@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcelable;
 
+import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqlbrite3.support.DbUtils;
 
@@ -26,17 +27,20 @@ import io.reactivex.functions.Function;
 
 // Note: normally I wouldn't prefix table classes but I didn't want 'List' to be overloaded.
 @AutoValue
-public abstract class TodoList implements Parcelable {
+public abstract class TodoList extends BaseEntity implements Parcelable {
     public static final String TABLE = "todo_list";
 
     public static final String ID = "_id";
     public static final String NAME = "name";
     public static final String ARCHIVED = "archived";
 
+    @ColumnName(ID)
     public abstract long id();
 
+    @ColumnName(NAME)
     public abstract String name();
 
+    @ColumnName(ARCHIVED)
     public abstract boolean archived();
 
     public static final class Builder {
@@ -69,18 +73,12 @@ public abstract class TodoList implements Parcelable {
         }
     };
 
-    static TodoList toEntity(Cursor cursor) {
-        long id = DbUtils.getLong(cursor, TodoList.ID);
-        String name = DbUtils.getString(cursor, TodoList.NAME);
-        boolean archived = DbUtils.getBoolean(cursor, TodoList.ARCHIVED);
-        return new AutoValue_TodoList(id, name, archived);
+    // Optional: if your project includes RxJava 2 the extension will generate a Function<Cursor, User>
+    public static Function<Cursor, TodoList> toEntity() {
+        return AutoValue_TodoList.MAPPER_FUNCTION;
     }
 
-    ContentValues toContentValues() {
-        return new TodoList.Builder()
-                .id(id())
-                .name(name())
-                .archived(archived())
-                .build();
+    public static TodoList toEntity(Cursor cursor) {
+        return AutoValue_TodoList.createFromCursor(cursor);
     }
 }

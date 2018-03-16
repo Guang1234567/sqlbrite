@@ -7,7 +7,7 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/14 18:42
  */
 

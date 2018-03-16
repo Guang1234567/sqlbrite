@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 dependencies {
     implementation rootProject.ext.supportV4
     implementation rootProject.ext.supportAnnotations
+    implementation rootProject.ext.supportMultidex
 
     implementation rootProject.ext.dagger
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -19,8 +20,10 @@ dependencies {
     annotationProcessor rootProject.ext.autoValue
     compileOnly rootProject.ext.autoValueGsonAnnotations
     annotationProcessor rootProject.ext.autoValueGson
-    compileOnly rootProject.ext.autoValueParcelAdapter
+    implementation rootProject.ext.autoValueParcelAdapter
     annotationProcessor rootProject.ext.autoValueParcel
+    compileOnly rootProject.ext.autoValueCursorAnnotations
+    annotationProcessor rootProject.ext.autoValueCursor
 
     implementation project(':sqlbrite')
     implementation project(':sqlbrite-support')
@@ -42,9 +45,7 @@ dependencies {
     implementation rootProject.ext.retrofit_rxAdapter
     implementation rootProject.ext.okhttp_logging_interceptor
 
-    implementation 'com.android.support:multidex:1.0.3'
-
-    compile 'com.gg.rxbase:rxbase:1.1.1'
+    implementation rootProject.ext.rxbase
 }
 
 android {

@@ -7,6 +7,8 @@ import com.example.sqlbrite.todo.di.UserScopeComponent;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
@@ -16,7 +18,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/14 12:31
  */
 
@@ -46,7 +48,13 @@ public interface UserManager {
         public Single<UserSession> startSessionForUser(String userId) {
             return mGitHubApiInterface.login(userId)
                     .subscribeOn(mSchedulerProvider.net())
-                    .onErrorReturnItem(User.create(userId, "伪造的人"))
+                    .onErrorReturnItem(
+                            User.builder()
+                                    .id(userId)
+                                    .name("伪造的人")
+                                    .timestamp(new Date())
+                                    .build()
+                    )
                     .observeOn(mSchedulerProvider.ui())
                     .flatMap(new Function<User, Single<UserSession>>() {
                         @Override
@@ -84,7 +92,7 @@ public interface UserManager {
             mUserScopeComponent = InjectHelper.instance().createUserScopeComponent(userSession.user().id());
         }
 
-        public void  oncloseUserSession(UserSession userSession) {
+        public void oncloseUserSession(UserSession userSession) {
             mUserScopeComponent = null;
         }
     }

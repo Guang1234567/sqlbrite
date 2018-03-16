@@ -15,7 +15,7 @@ import com.example.sqlbrite.todo.di.schedulers.SchedulerModule;
 import com.example.sqlbrite.todo.ui.BaseViewModelActivity;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/14 17:34
  */
 

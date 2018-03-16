@@ -11,7 +11,7 @@ import com.example.sqlbrite.todo.ui.SystemSettingActivity;
 import dagger.Component;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/14 13:10
  */
 

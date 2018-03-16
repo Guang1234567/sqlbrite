@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapterFactory;
 import com.ryanharter.auto.value.gson.GsonTypeAdapterFactory;
 
 /**
- * @author lihanguang
+ * @author Guang1234567
  * @date 2017/5/4 19:22:20
  */
 

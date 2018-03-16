@@ -15,7 +15,7 @@ import java.lang.reflect.ParameterizedType;
 import javax.inject.Inject;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/10 11:21
  */
 
