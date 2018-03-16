@@ -18,19 +18,19 @@ package com.example.sqlbrite.todo.model.local.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcelable;
+import android.provider.BaseColumns;
 
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
-import com.squareup.sqlbrite3.support.DbUtils;
 
 import io.reactivex.functions.Function;
 
 // Note: normally I wouldn't prefix table classes but I didn't want 'List' to be overloaded.
 @AutoValue
-public abstract class TodoList extends BaseEntity implements Parcelable {
+public abstract class TodoList implements Parcelable, toContentValuesAble {
     public static final String TABLE = "todo_list";
 
-    public static final String ID = "_id";
+    public static final String ID = BaseColumns._ID;
     public static final String NAME = "name";
     public static final String ARCHIVED = "archived";
 
@@ -66,15 +66,8 @@ public abstract class TodoList extends BaseEntity implements Parcelable {
         }
     }
 
-    static Function<Cursor, TodoList> MAPPER = new Function<Cursor, TodoList>() {
-        @Override
-        public TodoList apply(Cursor cursor) {
-            return toEntity(cursor);
-        }
-    };
-
     // Optional: if your project includes RxJava 2 the extension will generate a Function<Cursor, User>
-    public static Function<Cursor, TodoList> toEntity() {
+    public static Function<Cursor, TodoList> MAPPER_FUNCTION() {
         return AutoValue_TodoList.MAPPER_FUNCTION;
     }
 

@@ -95,7 +95,7 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
     public Observable<List<TodoItem>> createQueryTodoItemsByListId(long listId) {
         return createQuery(getTableName(), LIST_QUERY, listId)
-                .mapToList(TodoItem.MAPPER);
+                .mapToList(TodoItem.MAPPER_FUNCTION());
     }
 
     public long createNewOne(long listId, String description) {

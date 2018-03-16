@@ -11,9 +11,9 @@ import io.reactivex.functions.Function;
  * @author lihanguang
  * @date 2016/2/23 17:47
  */
-abstract class BaseEntity {
+public interface toContentValuesAble {
     // Optional: When you include an abstract method that returns ContentValues and doesn't have
     // any parameters the extension will implement it for you
-    abstract ContentValues toContentValues();
+    ContentValues toContentValues();
 
 }

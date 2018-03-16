@@ -18,26 +18,32 @@ package com.example.sqlbrite.todo.model.local.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcelable;
+import android.provider.BaseColumns;
 
+import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
 import io.reactivex.functions.Function;
 
 @AutoValue
-public abstract class TodoItem implements Parcelable {
+public abstract class TodoItem implements Parcelable, toContentValuesAble {
     public static final String TABLE = "todo_item";
 
-    public static final String ID = "_id";
+    public static final String ID = BaseColumns._ID;
     public static final String LIST_ID = "todo_list_id";
     public static final String DESCRIPTION = "description";
     public static final String COMPLETE = "complete";
 
+    @ColumnName(ID)
     public abstract long id();
 
+    @ColumnName(LIST_ID)
     public abstract long listId();
 
+    @ColumnName(DESCRIPTION)
     public abstract String description();
 
+    @ColumnName(COMPLETE)
     public abstract boolean complete();
 
     public static final class Builder {
@@ -68,27 +74,12 @@ public abstract class TodoItem implements Parcelable {
         }
     }
 
-    static Function<Cursor, TodoItem> MAPPER = new Function<Cursor, TodoItem>() {
-        @Override
-        public TodoItem apply(Cursor cursor) {
-            return toEntity(cursor);
-        }
-    };
-
-    static TodoItem toEntity(Cursor cursor) {
-        long id = Db.getLong(cursor, ID);
-        long listId = Db.getLong(cursor, LIST_ID);
-        String description = Db.getString(cursor, DESCRIPTION);
-        boolean complete = Db.getBoolean(cursor, COMPLETE);
-        return new AutoValue_TodoItem(id, listId, description, complete);
+    // Optional: if your project includes RxJava 2 the extension will generate a Function<Cursor, User>
+    public static Function<Cursor, TodoItem> MAPPER_FUNCTION() {
+        return AutoValue_TodoItem.MAPPER_FUNCTION;
     }
 
-    ContentValues toContentValues() {
-        return new TodoItem.Builder()
-                .id(id())
-                .complete(complete())
-                .listId(listId())
-                .description(description())
-                .build();
+    public static TodoItem toEntity(Cursor cursor) {
+        return AutoValue_TodoItem.createFromCursor(cursor);
     }
 }
