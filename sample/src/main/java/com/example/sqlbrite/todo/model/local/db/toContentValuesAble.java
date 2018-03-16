@@ -8,7 +8,7 @@ import io.reactivex.functions.Function;
 /**
  * 所有数据实体的基类
  *
- * @author lihanguang
+ * @author Guang1234567
  * @date 2016/2/23 17:47
  */
 public interface toContentValuesAble {

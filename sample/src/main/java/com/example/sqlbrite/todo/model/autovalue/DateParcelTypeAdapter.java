@@ -7,7 +7,7 @@ import com.ryanharter.auto.value.parcel.TypeAdapter;
 import java.util.Date;
 
 /**
- * @author lihanguang
+ * @author Guang1234567
  * @date 2017/5/5 00:45
  */
 

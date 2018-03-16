@@ -9,7 +9,7 @@ import com.squareup.sqlbrite3.support.DbUtils;
 import java.util.Date;
 
 /**
- * @author lihanguang
+ * @author Guang1234567
  * @date 2017/5/5 00:45
  */
 
