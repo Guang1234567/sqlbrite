@@ -159,6 +159,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
                         return listName + " (" + itemCount + ")";
                     }
                 })
+                .compose(this.<String>bindUntilEvent(FragmentEvent.PAUSE))
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(new Consumer<String>() {
                     @Override
