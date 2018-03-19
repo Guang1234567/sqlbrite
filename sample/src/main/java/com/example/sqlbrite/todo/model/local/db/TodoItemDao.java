@@ -31,8 +31,8 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
     }
 
     @Override
-    protected TodoItem toEntity(Cursor cursor) {
-        return TodoItem.toEntity(cursor);
+    protected TodoItem createFromCursor(Cursor cursor) {
+        return TodoItem.createFromCursor(cursor);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
     public boolean complete(long id, boolean complete) {
         return update(getTableName(), CONFLICT_NONE,
-                new TodoItem.Builder().complete(complete).build(), TodoItem.ID + " = ?",
+                new TodoItem.ContentValuesBuilder().complete(complete).build(), TodoItem.ID + " = ?",
                 String.valueOf(id)) > 0;
     }
 
@@ -100,7 +100,7 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
     public long createNewOne(long listId, String description) {
         return insert(CONFLICT_NONE,
-                new TodoItem.Builder()
+                new TodoItem.ContentValuesBuilder()
                         .listId(listId)
                         .description(description)
                         .build());

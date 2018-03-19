@@ -29,7 +29,7 @@ public abstract class BriteDaoSupport<ENTITY> {
 
     private final String mTableName;
 
-    private final String SQL_QUERY;
+    private final String SQL_QUERY_BY_ID;
 
     public BriteDaoSupport(BriteDatabase database) {
         mDatabase = database;
@@ -39,7 +39,12 @@ public abstract class BriteDaoSupport<ENTITY> {
 
         mTableName = toTableName(mEntityClazz);
 
-        SQL_QUERY = new StringBuilder("SELECT * FROM ").append(mTableName).toString();
+        SQL_QUERY_BY_ID = new StringBuilder("SELECT * FROM ")
+                .append(mTableName)
+                .append(" WHERE ")
+                .append(BaseColumns._ID)
+                .append("=?")
+                .toString();
     }
 
     final public long insert(ENTITY t) {
@@ -80,12 +85,12 @@ public abstract class BriteDaoSupport<ENTITY> {
 
     @CheckResult
     @Nullable
-    final public ENTITY queryById(long rowId) {
+    final public ENTITY queryById(final long rowId) {
         ENTITY e = null;
-        Cursor cursor = mDatabase.query(SQL_QUERY);
+        Cursor cursor = mDatabase.query(SQL_QUERY_BY_ID, new String[]{String.valueOf(rowId)});
         if (cursor != null && !cursor.isClosed()) {
             if (cursor.moveToFirst()) {
-                e = toEntity(cursor);
+                e = createFromCursor(cursor);
             }
             cursor.close();
         }
@@ -99,7 +104,7 @@ public abstract class BriteDaoSupport<ENTITY> {
         if (c != null && !c.isClosed()) {
             if (c.getCount() > 0) {
                 while (c.moveToNext()) {
-                    result.add(toEntity(c));
+                    result.add(createFromCursor(c));
                 }
             }
             c.close();
@@ -131,7 +136,7 @@ public abstract class BriteDaoSupport<ENTITY> {
 
     protected abstract ContentValues toContentValues(ENTITY e);
 
-    protected abstract ENTITY toEntity(Cursor cursor);
+    protected abstract ENTITY createFromCursor(Cursor cursor);
 
     protected abstract long toRowId(ENTITY e);
 

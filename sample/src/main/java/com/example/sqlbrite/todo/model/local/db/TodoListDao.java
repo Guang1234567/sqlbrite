@@ -29,8 +29,8 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
     }
 
     @Override
-    protected TodoList toEntity(Cursor cursor) {
-        return TodoList.toEntity(cursor);
+    protected TodoList createFromCursor(Cursor cursor) {
+        return TodoList.createFromCursor(cursor);
     }
 
     @Override
@@ -70,6 +70,6 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
     }
 
     public long createNewOne(String name) {
-        return insert(CONFLICT_NONE, new TodoList.Builder().name(name).build());
+        return insert(CONFLICT_NONE, new TodoList.ContentValuesBuilder().name(name).build());
     }
 }

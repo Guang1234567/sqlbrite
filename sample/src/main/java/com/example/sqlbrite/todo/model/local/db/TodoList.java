@@ -43,20 +43,20 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
     @ColumnName(ARCHIVED)
     public abstract boolean archived();
 
-    public static final class Builder {
+    public static final class ContentValuesBuilder {
         private final ContentValues values = new ContentValues();
 
-        public Builder id(long id) {
+        public ContentValuesBuilder id(long id) {
             values.put(ID, id);
             return this;
         }
 
-        public Builder name(String name) {
+        public ContentValuesBuilder name(String name) {
             values.put(NAME, name);
             return this;
         }
 
-        public Builder archived(boolean archived) {
+        public ContentValuesBuilder archived(boolean archived) {
             values.put(ARCHIVED, archived);
             return this;
         }
@@ -71,7 +71,7 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
         return AutoValue_TodoList.MAPPER_FUNCTION;
     }
 
-    public static TodoList toEntity(Cursor cursor) {
+    public static TodoList createFromCursor(Cursor cursor) {
         return AutoValue_TodoList.createFromCursor(cursor);
     }
 }

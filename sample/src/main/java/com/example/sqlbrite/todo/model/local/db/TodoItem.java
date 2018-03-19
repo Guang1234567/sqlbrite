@@ -46,25 +46,25 @@ public abstract class TodoItem implements Parcelable, toContentValuesAble {
     @ColumnName(COMPLETE)
     public abstract boolean complete();
 
-    public static final class Builder {
+    public static final class ContentValuesBuilder {
         private final ContentValues values = new ContentValues();
 
-        public Builder id(long id) {
+        public ContentValuesBuilder id(long id) {
             values.put(ID, id);
             return this;
         }
 
-        public Builder listId(long listId) {
+        public ContentValuesBuilder listId(long listId) {
             values.put(LIST_ID, listId);
             return this;
         }
 
-        public Builder description(String description) {
+        public ContentValuesBuilder description(String description) {
             values.put(DESCRIPTION, description);
             return this;
         }
 
-        public Builder complete(boolean complete) {
+        public ContentValuesBuilder complete(boolean complete) {
             values.put(COMPLETE, complete ? Db.BOOLEAN_TRUE : Db.BOOLEAN_FALSE);
             return this;
         }
@@ -79,7 +79,7 @@ public abstract class TodoItem implements Parcelable, toContentValuesAble {
         return AutoValue_TodoItem.MAPPER_FUNCTION;
     }
 
-    public static TodoItem toEntity(Cursor cursor) {
+    public static TodoItem createFromCursor(Cursor cursor) {
         return AutoValue_TodoItem.createFromCursor(cursor);
     }
 }
