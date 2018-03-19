@@ -20,8 +20,12 @@ import android.database.Cursor;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
 
+import com.example.sqlbrite.todo.model.autovalue.DateCursorTypeAdapter;
+import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
+
+import java.util.Date;
 
 import io.reactivex.functions.Function;
 
@@ -33,6 +37,7 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
     public static final String ID = BaseColumns._ID;
     public static final String NAME = "name";
     public static final String ARCHIVED = "archived";
+    public static final String CREATE_TIMESTAMP = "create_timestamp";
 
     @ColumnName(ID)
     public abstract long id();
@@ -42,6 +47,10 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
 
     @ColumnName(ARCHIVED)
     public abstract boolean archived();
+
+    @ColumnName(CREATE_TIMESTAMP)
+    @ColumnAdapter(DateCursorTypeAdapter.class)
+    public abstract Date createTimestamp();
 
     public static final class ContentValuesBuilder {
         private final ContentValues values = new ContentValues();
@@ -61,7 +70,16 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
             return this;
         }
 
+        public ContentValuesBuilder createTimestamp(Date timestamp) {
+            new DateCursorTypeAdapter().toContentValues(values, CREATE_TIMESTAMP, timestamp);
+            return this;
+        }
+
         public ContentValues build() {
+            // default value
+            if (!values.containsKey(CREATE_TIMESTAMP)) {
+                createTimestamp(new Date());
+            }
             return values; // TODO defensive copy?
         }
     }
@@ -71,7 +89,7 @@ public abstract class TodoList implements Parcelable, toContentValuesAble {
         return AutoValue_TodoList.MAPPER_FUNCTION;
     }
 
-    public static TodoList createFromCursor(Cursor cursor) {
+    public static TodoList create(Cursor cursor) {
         return AutoValue_TodoList.createFromCursor(cursor);
     }
 }

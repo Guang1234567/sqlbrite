@@ -39,10 +39,6 @@ public abstract class User implements Parcelable {
         public abstract User build();
     }
 
-    public static User create(String id, String name, Date timestamp) {
-        return new AutoValue_User(id, name, timestamp);
-    }
-
     // The public static method returning a TypeAdapter<Foo> is what
     // tells auto-value-gson to create a TypeAdapter for Foo.
     public static TypeAdapter<User> typeAdapter(Gson gson) {

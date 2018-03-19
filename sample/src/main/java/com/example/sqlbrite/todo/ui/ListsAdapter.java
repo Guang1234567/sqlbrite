@@ -23,6 +23,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import io.reactivex.functions.Consumer;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 final class ListsAdapter extends BaseAdapter implements Consumer<List<ListsItem>> {
@@ -61,7 +62,7 @@ final class ListsAdapter extends BaseAdapter implements Consumer<List<ListsItem>
     }
 
     ListsItem item = getItem(position);
-    ((TextView) convertView).setText(item.name() + " (" + item.itemCount() + ")");
+    ((TextView) convertView).setText(item.name() + " (" + item.itemCount() + ") " + String.valueOf(item.createTimestamp()));
 
     return convertView;
   }

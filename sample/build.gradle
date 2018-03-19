@@ -22,7 +22,7 @@ dependencies {
     annotationProcessor rootProject.ext.autoValueGson
     implementation rootProject.ext.autoValueParcelAdapter
     annotationProcessor rootProject.ext.autoValueParcel
-    compileOnly rootProject.ext.autoValueCursorAnnotations
+    implementation rootProject.ext.autoValueCursorAnnotations
     annotationProcessor rootProject.ext.autoValueCursor
 
     implementation project(':sqlbrite')

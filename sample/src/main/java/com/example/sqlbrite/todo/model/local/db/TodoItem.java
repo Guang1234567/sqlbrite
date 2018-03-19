@@ -79,7 +79,7 @@ public abstract class TodoItem implements Parcelable, toContentValuesAble {
         return AutoValue_TodoItem.MAPPER_FUNCTION;
     }
 
-    public static TodoItem createFromCursor(Cursor cursor) {
+    public static TodoItem create(Cursor cursor) {
         return AutoValue_TodoItem.createFromCursor(cursor);
     }
 }

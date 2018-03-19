@@ -26,27 +26,18 @@ public class ListsItemDao {
     // 业务逻辑
     //------------------------------------------------------------
 
-    private static String ALIAS_LIST = "list";
-    private static String ALIAS_ITEM = "item";
-
-    private static String LIST_ID = ALIAS_LIST + "." + TodoList.ID;
-    private static String LIST_NAME = ALIAS_LIST + "." + TodoList.NAME;
-    private static String ITEM_ID = ALIAS_ITEM + "." + TodoItem.ID;
-    private static String ITEM_LIST_ID = ALIAS_ITEM + "." + TodoItem.LIST_ID;
-
-    public static Collection<String> TABLES = Arrays.asList(TodoList.TABLE, TodoItem.TABLE);
     public static String QUERY = ""
-            + "SELECT " + LIST_ID + ", " + LIST_NAME + ", COUNT(" + ITEM_ID + ") as " + ListsItem.ITEM_COUNT
-            + " FROM " + TodoList.TABLE + " AS " + ALIAS_LIST
-            + " LEFT OUTER JOIN " + TodoItem.TABLE + " AS " + ALIAS_ITEM + " ON " + LIST_ID + " = " + ITEM_LIST_ID
-            + " GROUP BY " + LIST_ID;
+            + "SELECT " + ListsItem.LIST_ID + ", " + ListsItem.LIST_NAME + ", COUNT(" + ListsItem.ITEM_ID + ") as " + ListsItem.ITEM_COUNT + ", " + ListsItem.LIST_CREATE_TIMESTAMP
+            + " FROM " + TodoList.TABLE + " AS " + ListsItem.ALIAS_LIST
+            + " LEFT OUTER JOIN " + TodoItem.TABLE + " AS " + ListsItem.ALIAS_ITEM + " ON " + ListsItem.LIST_ID + " = " + ListsItem.ITEM_LIST_ID
+            + " GROUP BY " + ListsItem.LIST_ID;
 
     public Observable<List<ListsItem>> createQueryListsItems(final long max) {
-        return mDatabase.createQuery(TABLES, QUERY)
+        return mDatabase.createQuery(ListsItem.TABLES, QUERY)
                 .flatMap(new Function<SqlBrite.Query, Observable<List<ListsItem>>>() {
                     @Override
                     public Observable<List<ListsItem>> apply(SqlBrite.Query query) throws Exception {
-                        return query.asRows(ListsItem.MAPPER)
+                        return query.asRows(ListsItem.MAPPER_FUNCTION())
                                 .take(max)
                                 .toList()
                                 .toObservable();

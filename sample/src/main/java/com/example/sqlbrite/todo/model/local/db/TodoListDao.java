@@ -30,7 +30,7 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
 
     @Override
     protected TodoList createFromCursor(Cursor cursor) {
-        return TodoList.createFromCursor(cursor);
+        return TodoList.create(cursor);
     }
 
     @Override

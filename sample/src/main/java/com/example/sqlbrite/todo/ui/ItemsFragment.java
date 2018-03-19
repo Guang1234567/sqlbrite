@@ -152,12 +152,13 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         Observable<String> listName = getViewModel().createQueryListName(listId);
 
         //disposables.add(
-        Observable.combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
-            @Override
-            public String apply(String listName, Integer itemCount) {
-                return listName + " (" + itemCount + ")";
-            }
-        })
+        Observable
+                .combineLatest(listName, itemCount, new BiFunction<String, Integer, String>() {
+                    @Override
+                    public String apply(String listName, Integer itemCount) {
+                        return listName + " (" + itemCount + ")";
+                    }
+                })
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(new Consumer<String>() {
                     @Override

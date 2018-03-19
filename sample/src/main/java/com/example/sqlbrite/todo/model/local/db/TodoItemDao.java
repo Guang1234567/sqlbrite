@@ -32,7 +32,7 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
     @Override
     protected TodoItem createFromCursor(Cursor cursor) {
-        return TodoItem.createFromCursor(cursor);
+        return TodoItem.create(cursor);
     }
 
     @Override

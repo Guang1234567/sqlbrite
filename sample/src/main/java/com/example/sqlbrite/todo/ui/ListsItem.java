@@ -18,9 +18,17 @@ package com.example.sqlbrite.todo.ui;
 import android.database.Cursor;
 import android.os.Parcelable;
 
+import com.example.sqlbrite.todo.model.autovalue.DateCursorTypeAdapter;
 import com.example.sqlbrite.todo.model.local.db.Db;
+import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.example.sqlbrite.todo.model.local.db.TodoList;
+import com.gabrielittner.auto.value.cursor.ColumnAdapter;
+import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 
 import io.reactivex.functions.Function;
 
@@ -29,19 +37,32 @@ public abstract class ListsItem implements Parcelable {
 
     public final static String ITEM_COUNT = "item_count";
 
+    public final static String ALIAS_LIST = "list";
+    public final static String ALIAS_ITEM = "item";
+
+    public final static String LIST_ID = ALIAS_LIST + "." + TodoList.ID;
+    public final static String LIST_NAME = ALIAS_LIST + "." + TodoList.NAME;
+    public final static String LIST_CREATE_TIMESTAMP = ALIAS_LIST + "." + TodoList.CREATE_TIMESTAMP;
+    public final static String ITEM_ID = ALIAS_ITEM + "." + TodoItem.ID;
+    public final static String ITEM_LIST_ID = ALIAS_ITEM + "." + TodoItem.LIST_ID;
+
+    public static Collection<String> TABLES = Arrays.asList(TodoList.TABLE, TodoItem.TABLE);
+
+    @ColumnName(TodoList.ID)
     public abstract long id();
 
+    @ColumnName(TodoList.NAME)
     public abstract String name();
 
+    @ColumnName(TodoList.CREATE_TIMESTAMP)
+    @ColumnAdapter(DateCursorTypeAdapter.class)
+    public abstract Date createTimestamp();
+
+    @ColumnName(ITEM_COUNT)
     public abstract int itemCount();
 
-    public static Function<Cursor, ListsItem> MAPPER = new Function<Cursor, ListsItem>() {
-        @Override
-        public ListsItem apply(Cursor cursor) {
-            long id = Db.getLong(cursor, TodoList.ID);
-            String name = Db.getString(cursor, TodoList.NAME);
-            int itemCount = Db.getInt(cursor, ITEM_COUNT);
-            return new AutoValue_ListsItem(id, name, itemCount);
-        }
-    };
+    // Optional: if your project includes RxJava 2 the extension will generate a Function<Cursor, User>
+    public static Function<Cursor, ListsItem> MAPPER_FUNCTION() {
+        return AutoValue_ListsItem.MAPPER_FUNCTION;
+    }
 }

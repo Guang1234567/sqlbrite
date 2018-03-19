@@ -27,7 +27,8 @@ public final class DbCallback extends SupportSQLiteOpenHelper.Callback {
       + "CREATE TABLE " + TodoList.TABLE + "("
       + TodoList.ID + " INTEGER NOT NULL PRIMARY KEY,"
       + TodoList.NAME + " TEXT NOT NULL,"
-      + TodoList.ARCHIVED + " INTEGER NOT NULL DEFAULT 0"
+      + TodoList.ARCHIVED + " INTEGER NOT NULL DEFAULT 0,"
+      + TodoList.CREATE_TIMESTAMP + " INTEGER NOT NULL DEFAULT 0"
       + ")";
   private static final String CREATE_ITEM = ""
       + "CREATE TABLE " + TodoItem.TABLE + "("
