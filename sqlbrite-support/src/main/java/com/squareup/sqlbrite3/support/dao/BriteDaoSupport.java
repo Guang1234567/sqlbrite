@@ -87,7 +87,7 @@ public abstract class BriteDaoSupport<ENTITY> {
     @Nullable
     final public ENTITY queryById(final long rowId) {
         ENTITY e = null;
-        Cursor cursor = mDatabase.query(SQL_QUERY_BY_ID, new String[]{String.valueOf(rowId)});
+        Cursor cursor = mDatabase.query(SQL_QUERY_BY_ID, rowId);
         if (cursor != null && !cursor.isClosed()) {
             if (cursor.moveToFirst()) {
                 e = createFromCursor(cursor);
