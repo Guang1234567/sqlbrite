@@ -125,7 +125,7 @@ public final class DbModule {
     @Provides
     @UserScope
     BriteDatabase provideDatabase(SqlBrite sqlBrite, SupportSQLiteOpenHelper helper, SchedulerProvider schedulerProvider) {
-        BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(helper, schedulerProvider.database());
+        BriteDatabase briteDatabase = sqlBrite.wrapDatabaseHelper(helper, schedulerProvider.io());
         briteDatabase.setLoggingEnabled(true);
         return briteDatabase;
     }

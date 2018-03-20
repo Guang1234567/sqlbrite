@@ -46,6 +46,7 @@ dependencies {
     implementation rootProject.ext.okhttp_logging_interceptor
 
     implementation rootProject.ext.rxbase
+    implementation rootProject.ext.rxPreferences
 }
 
 android {

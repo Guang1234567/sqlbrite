@@ -16,10 +16,14 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.ActivityScopeComponent;
+import com.example.sqlbrite.todo.model.users.UserSession;
+
+import io.reactivex.functions.Consumer;
 
 public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         implements ListsFragment.Listener, ItemsFragment.Listener {
@@ -40,6 +44,16 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
     @Override
     protected void onResume() {
         super.onResume();
+
+        getViewModel().currentAliveUserSession()
+                .compose(this.<UserSession>bindToLifecycle())
+                .observeOn(getSchedulerProvider().ui())
+                .subscribe(new Consumer<UserSession>() {
+                    @Override
+                    public void accept(UserSession userSession) throws Exception {
+                        Toast.makeText(MainActivity.this, "当前用户 : " + userSession.user().id(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

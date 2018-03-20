@@ -16,9 +16,11 @@
 package com.example.sqlbrite.todo.di;
 
 import android.app.Application;
+import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.sqlbrite.todo.controler.LoginViewControler;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
+import com.example.sqlbrite.todo.model.users.LoginManager;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.SplashActivity;
@@ -38,17 +40,19 @@ public interface AppScopeComponent {
 
     SchedulerProvider schedulerProvider();
 
-    Retrofit retrofit();
+    /*Retrofit retrofit();
 
     @Named("cached")
     OkHttpClient okHttpClient();
 
     @Named("non_cached")
-    OkHttpClient okHttpClientWithoutCache();
+    OkHttpClient okHttpClientWithoutCache();*/
 
     GitHubApiInterface gitHubApiInterface();
 
     UserManager userManager();
+
+    LoginManager loginManager();
 
     LoginViewControler loginViewControler();
 

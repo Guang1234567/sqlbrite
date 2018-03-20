@@ -15,10 +15,9 @@
  */
 package com.example.sqlbrite.todo.di.model;
 
-import android.app.Application;
-
 import com.example.sqlbrite.todo.di.model.remote.NetModule;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
+import com.example.sqlbrite.todo.model.users.LoginManager;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
@@ -26,7 +25,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reactivex.Observable;
 
 @Module(
         includes = {
@@ -37,7 +35,13 @@ public final class AppScopeModelModule {
 
     @Provides
     @Singleton
-    public UserManager provideUserManager(Application application, GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
-        return new UserManager.UserManagerImpl(application, gitHubApiInterface, schedulerProvider);
+    public LoginManager provideLoginManager(GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
+        return new LoginManager.LoginManagerImpl(gitHubApiInterface, schedulerProvider);
+    }
+
+    @Provides
+    @Singleton
+    public UserManager provideUserManager(LoginManager loginManager, SchedulerProvider schedulerProvider) {
+        return new UserManager.UserManagerImpl(loginManager, schedulerProvider);
     }
 }

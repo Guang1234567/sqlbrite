@@ -1,21 +1,19 @@
 package com.example.sqlbrite.todo.model.users;
 
-import android.app.Application;
-
 import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.di.UserScopeComponent;
-import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
-import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.functions.Action;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 /**
  * @author Guang1234567
@@ -24,7 +22,9 @@ import io.reactivex.functions.Function;
 
 public interface UserManager {
 
-    Single<UserSession> startSessionForUser(String username);
+    Single<UserSession> createSessionForUser(String userId);
+
+    Single<UserSession> startSessionForUser(UserSession userSession);
 
     UserScopeComponent getUserScopeComponent();
 
@@ -32,36 +32,34 @@ public interface UserManager {
 
     class UserManagerImpl implements UserManager {
 
-        private final GitHubApiInterface mGitHubApiInterface;
+        private final LoginManager mLoginManager;
 
         private final SchedulerProvider mSchedulerProvider;
+
+        private List<UserSession> mAliveSessions;
 
         private UserScopeComponent mUserScopeComponent;
 
         @Inject
-        public UserManagerImpl(Application application, GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
-            mGitHubApiInterface = gitHubApiInterface;
+        public UserManagerImpl(LoginManager loginManager, SchedulerProvider schedulerProvider) {
+            mLoginManager = loginManager;
             mSchedulerProvider = schedulerProvider;
+            mAliveSessions = new LinkedList<>();
         }
 
         @Override
-        public Single<UserSession> startSessionForUser(String userId) {
-            return mGitHubApiInterface.login(userId)
-                    .subscribeOn(mSchedulerProvider.net())
-                    .onErrorReturnItem(
-                            User.builder()
-                                    .id(userId)
-                                    .name("伪造的人")
-                                    .timestamp(new Date())
-                                    .build()
-                    )
-                    .observeOn(mSchedulerProvider.ui())
-                    .flatMap(new Function<User, Single<UserSession>>() {
-                        @Override
-                        public Single<UserSession> apply(User user) throws Exception {
-                            return Single.just(UserSession.create(user, UserManagerImpl.this));
-                        }
-                    })
+        public Single<UserSession> createSessionForUser(final String userId) {
+            return Single.<UserSession>create(new SingleOnSubscribe<UserSession>() {
+                @Override
+                public void subscribe(SingleEmitter<UserSession> e) throws Exception {
+                    e.onSuccess(UserSession.create(userId, UserManagerImpl.this, mLoginManager));
+                }
+            });
+        }
+
+        @Override
+        public Single<UserSession> startSessionForUser(UserSession session) {
+            return Single.just(session)
                     .doOnSuccess(new Consumer<UserSession>() {
                         @Override
                         public void accept(UserSession userSession) throws Exception {
@@ -77,22 +75,23 @@ public interface UserManager {
 
         @Override
         public Completable closeUserSession(final UserSession userSession) {
-            return mGitHubApiInterface.logout(userSession.user().id())
-                    .subscribeOn(mSchedulerProvider.net())
-                    .observeOn(mSchedulerProvider.ui())
-                    .doOnComplete(new Action() {
+            return Single.just(userSession)
+                    .doOnSuccess(new Consumer<UserSession>() {
                         @Override
-                        public void run() throws Exception {
-                            oncloseUserSession(userSession);
+                        public void accept(UserSession userSession) throws Exception {
+                            onCloseUserSession(userSession);
                         }
-                    });
+                    })
+                    .toCompletable();
         }
 
         private void onStartUserSession(UserSession userSession) {
             mUserScopeComponent = InjectHelper.instance().createUserScopeComponent(userSession.user().id());
+            mAliveSessions.add(userSession);
         }
 
-        public void oncloseUserSession(UserSession userSession) {
+        public void onCloseUserSession(UserSession userSession) {
+            mAliveSessions.remove(userSession);
             mUserScopeComponent = null;
         }
     }

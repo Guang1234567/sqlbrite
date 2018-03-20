@@ -53,16 +53,4 @@ public class TodoSchedulerProvider implements SchedulerProvider {
     public Scheduler viewModel() {
         return Schedulers.single();
     }
-
-    @Override
-    @NonNull
-    public Scheduler database() {
-        return Schedulers.io();
-    }
-
-    @Override
-    @NonNull
-    public Scheduler net() {
-        return Schedulers.io();
-    }
 }

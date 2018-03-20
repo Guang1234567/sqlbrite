@@ -2,6 +2,7 @@ package com.example.sqlbrite.todo.controler;
 
 import com.example.sqlbrite.todo.model.MainDataSource;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
+import com.example.sqlbrite.todo.model.users.UserSession;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.ListsItem;
 import com.gg.rxbase.controller.RxBaseViewModel;
@@ -22,20 +23,24 @@ import io.reactivex.Observable;
 
 public class MainViewModel extends RxBaseViewModel {
 
-    private final SchedulerProvider mSchedulerProvider;
     private final MainDataSource mDataSource;
+    private final LoginViewControler mLoginViewControler;
+    private final SchedulerProvider mSchedulerProvider;
+
     private Date mLastCreateTime;
 
     @Inject
     public MainViewModel(MainDataSource dataSource,
+                         LoginViewControler loginViewControler,
                          SchedulerProvider schedulerProvider) {
         mDataSource = dataSource;
+        mLoginViewControler = loginViewControler;
         mSchedulerProvider = schedulerProvider;
         mLastCreateTime = new Date();
     }
 
-    public Date getLastCreateTime() {
-        return mLastCreateTime;
+    public Observable<UserSession> currentAliveUserSession() {
+        return mLoginViewControler.currentAliveUserSession();
     }
 
     public Observable<List<ListsItem>> createQueryListsItems() {
@@ -72,5 +77,9 @@ public class MainViewModel extends RxBaseViewModel {
 
     public File exportDecryption() throws Exception {
         return mDataSource.exportDecryption();
+    }
+
+    public Date getLastCreateTime() {
+        return mLastCreateTime;
     }
 }

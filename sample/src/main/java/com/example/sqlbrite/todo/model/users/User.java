@@ -1,6 +1,7 @@
 package com.example.sqlbrite.todo.model.users;
 
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.example.sqlbrite.todo.model.autovalue.DateParcelTypeAdapter;
 import com.google.auto.value.AutoValue;
@@ -17,9 +18,11 @@ public abstract class User implements Parcelable {
     @SerializedName("id")
     public abstract String id();
 
+    @Nullable
     @SerializedName("name")
     public abstract String name();
 
+    @Nullable
     @SerializedName("timestamp")
     @ParcelAdapter(DateParcelTypeAdapter.class)
     public abstract Date timestamp();

@@ -16,16 +16,24 @@
 package com.example.sqlbrite.todo;
 
 import android.app.Application;
-import android.support.multidex.MultiDexApplication;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.example.sqlbrite.todo.di.AppScopeComponent;
 import com.example.sqlbrite.todo.di.InjectHelper;
 
 import timber.log.Timber;
 
-public final class TodoApp extends MultiDexApplication {
+public final class TodoApp extends Application {
 
     private AppScopeComponent mAppScopeComponent;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        MultiDex.install(base);
+    }
 
     @Override
     public void onCreate() {

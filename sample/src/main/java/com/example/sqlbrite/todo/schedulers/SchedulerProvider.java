@@ -29,10 +29,4 @@ public interface SchedulerProvider {
 
     @NonNull
     Scheduler viewModel();
-
-    @NonNull
-    Scheduler database();
-
-    @NonNull
-    Scheduler net();
 }
