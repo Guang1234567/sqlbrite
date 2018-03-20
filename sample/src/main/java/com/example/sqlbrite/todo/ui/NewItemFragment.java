@@ -18,8 +18,6 @@ package com.example.sqlbrite.todo.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -30,19 +28,16 @@ import android.widget.EditText;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
+import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.example.sqlbrite.todo.di.InjectHelper;
-import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
-public final class NewItemFragment extends RxAppCompatDialogFragment {
+public final class NewItemFragment extends BaseViewModelDialogFragment<MainViewModel> {
     private static final String KEY_LIST_ID = "list_id";
 
     public static NewItemFragment newInstance(long listId) {
@@ -56,15 +51,6 @@ public final class NewItemFragment extends RxAppCompatDialogFragment {
 
     private final PublishSubject<String> createClicked = PublishSubject.create();
 
-    @Inject
-    SchedulerProvider mSchedulerProvider;
-
-    @Inject
-    ViewModelProvider.Factory mViewModelFactory;
-
-    //@Inject
-    MainViewModel mViewModel;
-
     private long getListId() {
         return getArguments().getLong(KEY_LIST_ID);
     }
@@ -75,10 +61,14 @@ public final class NewItemFragment extends RxAppCompatDialogFragment {
         InjectHelper.instance().createFragmentScopeComponent(getActivity(), this).inject(this);
     }
 
+    @Override
+    protected void injectOnAttach(FragmentScopeComponent component) {
+        component.inject(this);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(MainViewModel.class);
 
         final Context context = getActivity();
         View view = LayoutInflater.from(context).inflate(R.layout.new_item, null);
@@ -95,7 +85,7 @@ public final class NewItemFragment extends RxAppCompatDialogFragment {
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String description) {
-                        mViewModel.createNewOneTodoItem(getListId(), description);
+                        getViewModel().createNewOneTodoItem(getListId(), description);
                     }
                 });
 

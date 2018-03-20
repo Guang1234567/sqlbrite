@@ -80,7 +80,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     }
 
     @Override
-    protected void injectonAttach(FragmentScopeComponent component) {
+    protected void injectOnAttach(FragmentScopeComponent component) {
         component.inject(this);
     }
 

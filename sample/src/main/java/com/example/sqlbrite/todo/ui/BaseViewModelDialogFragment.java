@@ -6,11 +6,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 
 import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
-import com.gg.rxbase.ui.RxBaseFragment;
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -22,7 +23,7 @@ import javax.inject.Inject;
  * @date 2018/3/9 10:03
  */
 
-public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends RxBaseFragment {
+public abstract class BaseViewModelDialogFragment<VIEWMODEL extends ViewModel> extends RxAppCompatDialogFragment {
 
     private FragmentScopeComponent mFragmentScopeComponent;
 
@@ -53,8 +54,7 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
 
         Class<VIEWMODEL> viewModelClazz;
         Type genericSuperclass = this.getClass().getGenericSuperclass();
@@ -65,6 +65,8 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
             viewModelClazz = (Class<VIEWMODEL>) genericSuperclass;
         }
         mViewModel = (VIEWMODEL) ViewModelProviders.of(getActivity(), mViewModelFactory).get(viewModelClazz);
+
+        return super.onGetLayoutInflater(savedInstanceState);
     }
 
     protected VIEWMODEL getViewModel() {
