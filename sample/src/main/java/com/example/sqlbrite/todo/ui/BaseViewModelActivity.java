@@ -11,6 +11,7 @@ import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.gg.rxbase.ui.RxBaseActivity;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 
@@ -31,14 +32,22 @@ public abstract class BaseViewModelActivity<VIEWMODEL extends ViewModel> extends
 
     private VIEWMODEL mViewModel;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mActivityScopeComponent = InjectHelper.instance().createActivityScopeComponent(this);
         injectOnCreate(mActivityScopeComponent);
 
-        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
-        Class viewModelClazz = (Class) type.getActualTypeArguments()[0];
+        Class<VIEWMODEL> viewModelClazz;
+        Type genericSuperclass = this.getClass().getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+            viewModelClazz = (Class<VIEWMODEL>) actualTypeArguments[0];
+        } else {
+            viewModelClazz = (Class<VIEWMODEL>) genericSuperclass;
+        }
         mViewModel = (VIEWMODEL) ViewModelProviders.of(this, mViewModelFactory).get(viewModelClazz);
     }
 

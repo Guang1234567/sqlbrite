@@ -11,6 +11,7 @@ import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.QueryObservable;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,17 +26,23 @@ public abstract class BriteDaoSupport<ENTITY> {
 
     private final BriteDatabase mDatabase;
 
-    private final Class mEntityClazz;
+    private final Class<ENTITY> mEntityClazz;
 
     private final String mTableName;
 
     private final String SQL_QUERY_BY_ID;
 
+    @SuppressWarnings("unchecked")
     public BriteDaoSupport(BriteDatabase database) {
         mDatabase = database;
 
-        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
-        mEntityClazz = (Class) type.getActualTypeArguments()[0];
+        Type genericSuperclass = this.getClass().getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+            mEntityClazz = (Class<ENTITY>) actualTypeArguments[0];
+        } else {
+            mEntityClazz = (Class<ENTITY>) genericSuperclass;
+        }
 
         mTableName = toTableName(mEntityClazz);
 

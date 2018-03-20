@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,7 +31,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.trello.rxlifecycle2.android.FragmentEvent;
@@ -43,9 +41,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-
-import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
-import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
 public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     private static final String TAG = "ListsFragment";
@@ -77,14 +72,15 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         if (!(activity instanceof Listener)) {
             throw new IllegalStateException("Activity must implement fragment Listener.");
         }
+
         setHasOptionsMenu(true);
 
         listener = (Listener) activity;
-        adapter = new ListsAdapter(activity);
+        adapter = new ListsAdapter(context);
     }
 
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    protected void injectonAttach(FragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -101,7 +97,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                     }
                 });
 
-        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         item = menu.add(R.string.export_db)
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -112,7 +108,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                     }
                 });
 
-        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         item = menu.add(R.string.setting)
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -124,7 +120,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                     }
                 });
 
-        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
     }
 
     private void exportDB() {

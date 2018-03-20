@@ -41,8 +41,6 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
-import static butterknife.ButterKnife.findById;
-
 public final class NewListFragment extends RxAppCompatDialogFragment {
     public static NewListFragment newInstance() {
         return new NewListFragment();
@@ -74,7 +72,7 @@ public final class NewListFragment extends RxAppCompatDialogFragment {
         final Context context = getActivity();
         View view = LayoutInflater.from(context).inflate(R.layout.new_list, null);
 
-        EditText name = findById(view, android.R.id.input);
+        EditText name = view.findViewById(android.R.id.input);
         Observable.combineLatest(createClicked, RxTextView.textChanges(name),
                 new BiFunction<String, CharSequence, String>() {
                     @Override

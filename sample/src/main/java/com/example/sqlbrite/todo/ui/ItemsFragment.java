@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,7 +29,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
@@ -45,9 +43,6 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
-
-import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_IF_ROOM;
-import static android.support.v4.view.MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT;
 
 public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
     private static final String KEY_LIST_ID = "list_id";
@@ -72,6 +67,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
 
     @BindView(android.R.id.empty)
     View emptyView;
+
     private Listener listener;
 
     private ItemsAdapter adapter;
@@ -92,11 +88,11 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         setHasOptionsMenu(true);
 
         listener = (Listener) activity;
-        adapter = new ItemsAdapter(activity);
+        adapter = new ItemsAdapter(context);
     }
 
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    protected void injectonAttach(FragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -112,7 +108,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
                         return true;
                     }
                 });
-        MenuItemCompat.setShowAsAction(item, SHOW_AS_ACTION_IF_ROOM | SHOW_AS_ACTION_WITH_TEXT);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
     }
 
     @Override

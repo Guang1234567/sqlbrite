@@ -13,6 +13,7 @@ import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.gg.rxbase.ui.RxBaseFragment;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 
@@ -36,21 +37,33 @@ public abstract class BaseViewModelFragment<VIEWMODEL extends ViewModel> extends
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (!(getActivity() instanceof BaseViewModelActivity)) {
+            throw new IllegalStateException("Activity must extends " + BaseViewModelActivity.class);
+        }
+
         mFragmentScopeComponent = InjectHelper.instance().createFragmentScopeComponent(getActivity(), this);
-        injectOnAttach(mFragmentScopeComponent);
+        injectonAttach(mFragmentScopeComponent);
     }
 
     protected FragmentScopeComponent getFragmentScopeComponent() {
         return mFragmentScopeComponent;
     }
 
-    protected abstract void injectOnAttach(FragmentScopeComponent component);
+    protected abstract void injectonAttach(FragmentScopeComponent component);
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
-        Class viewModelClazz = (Class) type.getActualTypeArguments()[0];
+
+        Class<VIEWMODEL> viewModelClazz;
+        Type genericSuperclass = this.getClass().getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass).getActualTypeArguments();
+            viewModelClazz = (Class<VIEWMODEL>) actualTypeArguments[0];
+        } else {
+            viewModelClazz = (Class<VIEWMODEL>) genericSuperclass;
+        }
         mViewModel = (VIEWMODEL) ViewModelProviders.of(getActivity(), mViewModelFactory).get(viewModelClazz);
     }
 

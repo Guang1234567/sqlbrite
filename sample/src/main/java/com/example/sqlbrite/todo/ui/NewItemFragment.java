@@ -29,7 +29,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.InjectHelper;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
@@ -42,8 +41,6 @@ import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
-
-import static butterknife.ButterKnife.findById;
 
 public final class NewItemFragment extends RxAppCompatDialogFragment {
     private static final String KEY_LIST_ID = "list_id";
@@ -86,7 +83,7 @@ public final class NewItemFragment extends RxAppCompatDialogFragment {
         final Context context = getActivity();
         View view = LayoutInflater.from(context).inflate(R.layout.new_item, null);
 
-        EditText name = findById(view, android.R.id.input);
+        EditText name = view.findViewById(android.R.id.input);
         Observable.combineLatest(createClicked, RxTextView.textChanges(name),
                 new BiFunction<String, CharSequence, String>() {
                     @Override
