@@ -22,6 +22,7 @@ import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.LoginViewControler;
 import com.example.sqlbrite.todo.di.model.AppScopeModelModule;
 import com.example.sqlbrite.todo.di.schedulers.SchedulerModule;
+import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
@@ -64,7 +65,7 @@ public final class AppScopeModule {
 
     @Provides
     @Singleton
-    public LoginViewControler provideLoginViewModel(UserManager userManager, SchedulerProvider schedulerProvider) {
-        return new LoginViewControler(userManager, schedulerProvider);
+    public LoginViewControler provideLoginViewControler(UserManager userManager, AppPrefs appPrefs, SchedulerProvider schedulerProvider) {
+        return new LoginViewControler(userManager, appPrefs, schedulerProvider);
     }
 }

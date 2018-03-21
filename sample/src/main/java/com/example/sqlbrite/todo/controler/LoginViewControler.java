@@ -1,5 +1,6 @@
 package com.example.sqlbrite.todo.controler;
 
+import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.model.users.UserSession;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
@@ -23,14 +24,17 @@ import io.reactivex.functions.Function;
 public class LoginViewControler {
 
     private final UserManager mUserManager;
+    private final AppPrefs mAppPrefs;
     private final SchedulerProvider mSchedulerProvider;
 
     private UserSession mUserSession = null;
 
     @Inject
     public LoginViewControler(UserManager userManager,
+                              AppPrefs appPrefs,
                               SchedulerProvider schedulerProvider) {
         mUserManager = userManager;
+        mAppPrefs = appPrefs;
         mSchedulerProvider = schedulerProvider;
     }
 
@@ -52,6 +56,7 @@ public class LoginViewControler {
                     @Override
                     public void accept(UserSession userSession) throws Exception {
                         mUserSession = userSession;
+                        mAppPrefs.lastLoginUserId().set(userSession.user().id());
                     }
                 });
     }

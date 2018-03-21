@@ -4,7 +4,7 @@ import com.f2prateek.rx.preferences2.Preference;
 import com.f2prateek.rx.preferences2.RxSharedPreferences;
 
 /**
- * @author Administrator
+ * @author Guang1234567
  * @date 2018/3/21 12:35
  */
 
