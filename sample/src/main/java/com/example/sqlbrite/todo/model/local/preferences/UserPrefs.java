@@ -2,6 +2,7 @@ package com.example.sqlbrite.todo.model.local.preferences;
 
 import com.f2prateek.rx.preferences2.Preference;
 import com.f2prateek.rx.preferences2.RxSharedPreferences;
+import com.google.gson.Gson;
 
 /**
  * @author Guang1234567
@@ -12,7 +13,10 @@ public class UserPrefs {
 
     private final RxSharedPreferences mPreferences;
 
-    public UserPrefs(RxSharedPreferences preferences) {
+    private final Gson mGson;
+
+    public UserPrefs(RxSharedPreferences preferences, Gson gson) {
         mPreferences = preferences;
+        mGson = gson;
     }
 }

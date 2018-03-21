@@ -21,6 +21,7 @@ import android.support.v7.preference.PreferenceManager;
 
 import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.f2prateek.rx.preferences2.RxSharedPreferences;
+import com.google.gson.Gson;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -47,7 +48,7 @@ public final class AppScopePreferencesModule {
 
     @Provides
     @Singleton
-    public AppPrefs provideAppPrefs(@Named("app_scope") RxSharedPreferences sharedPreferences) {
-        return new AppPrefs(sharedPreferences);
+    public AppPrefs provideAppPrefs(@Named("app_scope") RxSharedPreferences sharedPreferences, Gson gson) {
+        return new AppPrefs(sharedPreferences, gson);
     }
 }

@@ -26,6 +26,7 @@ import com.example.sqlbrite.todo.model.users.LoginManager;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.SplashActivity;
+import com.google.gson.Gson;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -41,6 +42,8 @@ public interface AppScopeComponent {
     Application application();
 
     SchedulerProvider schedulerProvider();
+
+    Gson gson();
 
     /*Retrofit retrofit();
 

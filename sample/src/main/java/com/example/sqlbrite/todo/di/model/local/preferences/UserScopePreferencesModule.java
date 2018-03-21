@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import com.example.sqlbrite.todo.di.UserScope;
 import com.example.sqlbrite.todo.model.local.preferences.UserPrefs;
 import com.f2prateek.rx.preferences2.RxSharedPreferences;
+import com.google.gson.Gson;
 
 import javax.inject.Named;
 
@@ -52,7 +53,7 @@ public final class UserScopePreferencesModule {
 
     @Provides
     @UserScope
-    public UserPrefs provideUserPrefs(@Named("user_scope") RxSharedPreferences sharedPreferences) {
-        return new UserPrefs(sharedPreferences);
+    public UserPrefs provideUserPrefs(@Named("user_scope") RxSharedPreferences sharedPreferences, Gson gson) {
+        return new UserPrefs(sharedPreferences, gson);
     }
 }
