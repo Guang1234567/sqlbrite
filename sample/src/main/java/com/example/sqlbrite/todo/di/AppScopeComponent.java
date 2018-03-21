@@ -18,6 +18,7 @@ package com.example.sqlbrite.todo.di;
 import android.app.Application;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.LoginViewControler;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
 import com.example.sqlbrite.todo.model.users.LoginManager;
@@ -55,6 +56,8 @@ public interface AppScopeComponent {
     LoginManager loginManager();
 
     LoginViewControler loginViewControler();
+
+    void inject(TodoApp app);
 
     void inject(SplashActivity activity);
 }

@@ -15,18 +15,36 @@
  */
 package com.example.sqlbrite.todo;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.MainThread;
 import android.support.multidex.MultiDex;
 
 import com.example.sqlbrite.todo.di.AppScopeComponent;
 import com.example.sqlbrite.todo.di.InjectHelper;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
 public final class TodoApp extends Application {
 
     private AppScopeComponent mAppScopeComponent;
+
+    @Inject
+    ActivityMgr mActivityMgr;
+
+    public static TodoApp getApplication(Context context) {
+        return (TodoApp) context.getApplicationContext();
+    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -45,5 +63,79 @@ public final class TodoApp extends Application {
 
         mAppScopeComponent = InjectHelper.instance()
                 .init(this);
+
+        mAppScopeComponent.inject(this);
+
+    }
+
+    public void exit() {
+        if (Looper.getMainLooper() == Looper.myLooper()) {
+            exitInMainThread();
+        } else {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    exitInMainThread();
+                }
+            });
+        }
+    }
+
+    private void exitInMainThread() {
+        mActivityMgr.finishAllActivity();
+    }
+
+    public final static class ActivityMgr {
+        private List<Activity> mActivitys;
+
+        public ActivityMgr(Application app) {
+            mActivitys = new LinkedList<>();
+            app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                    mActivitys.add(activity);
+                }
+
+                @Override
+                public void onActivityStarted(Activity activity) {
+                }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                }
+
+                @Override
+                public void onActivityPaused(Activity activity) {
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+                }
+
+                @Override
+                public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                }
+
+                @Override
+                public void onActivityDestroyed(Activity activity) {
+                    if (!mActivitys.isEmpty()) {
+                        mActivitys.remove(activity);
+                    }
+                }
+            });
+        }
+
+        @MainThread
+        void finishAllActivity() {
+            if (mActivitys.isEmpty()) {
+                return;
+            }
+            Iterator<Activity> iterator = mActivitys.iterator();
+            while (iterator.hasNext()) {
+                Activity activity = iterator.next();
+                activity.finish();
+                iterator.remove();
+            }
+        }
     }
 }

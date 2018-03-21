@@ -48,7 +48,8 @@ public interface LoginManager {
         @Override
         public Completable logout(String userId) {
             return mGitHubApiInterface.logout(userId)
-                    .subscribeOn(mSchedulerProvider.io());
+                    .subscribeOn(mSchedulerProvider.io())
+                    .onErrorComplete();
         }
     }
 }

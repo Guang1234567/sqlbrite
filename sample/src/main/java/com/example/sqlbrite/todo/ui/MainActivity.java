@@ -15,7 +15,9 @@
  */
 package com.example.sqlbrite.todo.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
@@ -45,6 +47,8 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
     protected void onResume() {
         super.onResume();
 
+        // Obtain currrent login user to do sth.
+        // No login no trigger
         getViewModel().currentAliveUserSession()
                 .compose(this.<UserSession>bindToLifecycle())
                 .observeOn(getSchedulerProvider().ui())
@@ -86,5 +90,18 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
     @Override
     public void onNewItemClicked(long listId) {
         NewItemFragment.newInstance(listId).show(getSupportFragmentManager(), "new-item");
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
     }
 }
