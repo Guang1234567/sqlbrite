@@ -2,10 +2,7 @@ package com.example.sqlbrite.todo.di;
 
 import android.arch.lifecycle.ViewModelProvider;
 
-import com.example.sqlbrite.todo.controler.LoginViewControler;
-import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
-import com.example.sqlbrite.todo.model.users.LoginManager;
-import com.example.sqlbrite.todo.model.users.UserManager;
+import com.example.sqlbrite.todo.model.local.preferences.UserPrefs;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
 import dagger.Component;
@@ -18,11 +15,5 @@ public interface UserScopeComponent {
 
     ViewModelProvider.Factory viewModelProviderFactory();
 
-    GitHubApiInterface gitHubApiInterface();
-
-    UserManager userManager();
-
-    LoginManager loginManager();
-
-    LoginViewControler loginViewControler();
+    UserPrefs userPrefs();
 }

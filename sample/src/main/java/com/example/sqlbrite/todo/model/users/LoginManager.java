@@ -1,6 +1,7 @@
 package com.example.sqlbrite.todo.model.users;
 
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
+import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
 import java.util.Date;
@@ -9,6 +10,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 /**
  * @author Guang1234567
@@ -24,11 +26,15 @@ public interface LoginManager {
     class LoginManagerImpl implements LoginManager {
 
         private final GitHubApiInterface mGitHubApiInterface;
+        private final AppPrefs mAppPrefs;
         private final SchedulerProvider mSchedulerProvider;
 
         @Inject
-        public LoginManagerImpl(GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
+        public LoginManagerImpl(GitHubApiInterface gitHubApiInterface,
+                                AppPrefs appPrefs,
+                                SchedulerProvider schedulerProvider) {
             mGitHubApiInterface = gitHubApiInterface;
+            mAppPrefs = appPrefs;
             mSchedulerProvider = schedulerProvider;
         }
 
@@ -42,7 +48,12 @@ public interface LoginManager {
                                     .name("伪造的人")
                                     .timestamp(new Date())
                                     .build()
-                    );
+                    ).doOnSuccess(new Consumer<User>() {
+                        @Override
+                        public void accept(User user) throws Exception {
+                            mAppPrefs.lastLoginUserId().set(user.id());
+                        }
+                    });
         }
 
         @Override

@@ -2,16 +2,13 @@ package com.example.sqlbrite.todo.di;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.example.sqlbrite.todo.di.model.AppScopeModelModule;
-import com.example.sqlbrite.todo.di.model.UserScopeModelModule;
 import com.example.sqlbrite.todo.di.model.local.db.DbModule;
-import com.example.sqlbrite.todo.di.model.local.preferences.PreferencesModule;
+import com.example.sqlbrite.todo.di.model.local.preferences.AppScopePreferencesModule;
+import com.example.sqlbrite.todo.di.model.local.preferences.UserScopePreferencesModule;
 import com.example.sqlbrite.todo.di.model.remote.NetModule;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule;
-import com.example.sqlbrite.todo.di.schedulers.SchedulerModule;
 import com.example.sqlbrite.todo.ui.BaseViewModelActivity;
 
 /**
@@ -39,6 +36,7 @@ public class InjectHelper {
                 .appScopeModule(new AppScopeModule(application))
                 .netModule(new NetModule("https://www.github.com"))
                 .todoApiModule(new TodoApiModule())
+                .appScopePreferencesModule(new AppScopePreferencesModule())
                 .build();
         return mAppScopeComponent;
     }
@@ -52,7 +50,7 @@ public class InjectHelper {
         return DaggerUserScopeComponent.builder()
                 .appScopeComponent(getAppScopeComponent())
                 .dbModule(new DbModule(userId))
-                .preferencesModule(new PreferencesModule())
+                .userScopePreferencesModule(new UserScopePreferencesModule(userId))
                 .build();
     }
 

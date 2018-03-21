@@ -15,8 +15,10 @@
  */
 package com.example.sqlbrite.todo.di.model;
 
+import com.example.sqlbrite.todo.di.model.local.preferences.AppScopePreferencesModule;
 import com.example.sqlbrite.todo.di.model.remote.NetModule;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule.GitHubApiInterface;
+import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.example.sqlbrite.todo.model.users.LoginManager;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
@@ -28,15 +30,16 @@ import dagger.Provides;
 
 @Module(
         includes = {
-                NetModule.class
+                NetModule.class,
+                AppScopePreferencesModule.class
         }
 )
 public final class AppScopeModelModule {
 
     @Provides
     @Singleton
-    public LoginManager provideLoginManager(GitHubApiInterface gitHubApiInterface, SchedulerProvider schedulerProvider) {
-        return new LoginManager.LoginManagerImpl(gitHubApiInterface, schedulerProvider);
+    public LoginManager provideLoginManager(GitHubApiInterface gitHubApiInterface, AppPrefs appPrefs, SchedulerProvider schedulerProvider) {
+        return new LoginManager.LoginManagerImpl(gitHubApiInterface, appPrefs, schedulerProvider);
     }
 
     @Provides

@@ -17,7 +17,7 @@ package com.example.sqlbrite.todo.di.model;
 
 import com.example.sqlbrite.todo.di.UserScope;
 import com.example.sqlbrite.todo.di.model.local.db.DbModule;
-import com.example.sqlbrite.todo.di.model.local.preferences.PreferencesModule;
+import com.example.sqlbrite.todo.di.model.local.preferences.UserScopePreferencesModule;
 import com.example.sqlbrite.todo.model.MainDataSource;
 import com.example.sqlbrite.todo.model.MainRepository;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
@@ -31,7 +31,7 @@ import dagger.Provides;
 @Module(
         includes = {
                 DbModule.class,
-                PreferencesModule.class,
+                UserScopePreferencesModule.class,
         }
 )
 public final class UserScopeModelModule {
