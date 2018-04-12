@@ -19,11 +19,14 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
+import com.gg.rxbase.net.retrofit.ApiRxThrowableHandlingCallAdapterFactory;
+import com.gg.rxbase.net.retrofit.ApiThrowableHandler;
+import com.gg.rxbase.net.retrofit.ObserveOnCallAdapterFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
-import com.ryanharter.auto.value.gson.GenerateTypeAdapter;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -98,9 +101,21 @@ public final class NetModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(Gson gson, @Named("cached") OkHttpClient okHttpClient) {
+    ApiThrowableHandler provideApiThrowableHandler() {
+        return ApiThrowableHandler.DEFAULT;
+    }
+
+    @Provides
+    @Singleton
+    Retrofit provideRetrofit(Gson gson,
+                             @Named("cached") OkHttpClient okHttpClient,
+                             Application application,
+                             ApiThrowableHandler apiThrowableHandler,
+                             SchedulerProvider schedulerProvider) {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(ApiRxThrowableHandlingCallAdapterFactory.create(application, apiThrowableHandler, schedulerProvider.ui()))
+                .addCallAdapterFactory(ObserveOnCallAdapterFactory.create(schedulerProvider.io()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(mBaseUrl)
                 .client(okHttpClient)

@@ -51,11 +51,11 @@ public final class AppScopeModule {
         return mApplication;
     }
 
-    @Provides
+    /*@Provides
     @Singleton
     public Context provideContext() {
         return mApplication;
-    }
+    }*/
 
     @Provides
     @Singleton

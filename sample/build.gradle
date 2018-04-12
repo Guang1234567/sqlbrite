@@ -47,6 +47,7 @@ dependencies {
 
     implementation rootProject.ext.rxbase
     implementation rootProject.ext.rxPreferences
+    implementation rootProject.ext.multitype
 }
 
 android {
