@@ -49,7 +49,7 @@ ext {
     supportMultidex = 'com.android.support:multidex:1.0.3'
     supportTestRunner = 'com.android.support.test:runner:0.5'
 
-    rxbase = 'com.gg.rxbase:rxbase:1.1.4'
+    rxbase = 'com.gg.rxbase:rxbase:1.1.9'
 
     multitype = "me.drakeet.multitype:multitype:3.4.4"
 

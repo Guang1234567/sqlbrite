@@ -19,9 +19,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.sqlbrite.todo.controler.TodoApiThrowableHandler;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
-import com.gg.rxbase.net.retrofit.ApiRxThrowableHandlingCallAdapterFactory;
-import com.gg.rxbase.net.retrofit.ApiThrowableHandler;
+import com.gg.rxbase.net.retrofit.ApiErrorHandlingTransformer;
+import com.gg.rxbase.net.retrofit.ApiTransformerCallAdapterFactory;
 import com.gg.rxbase.net.retrofit.ObserveOnCallAdapterFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -33,6 +34,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.functions.Consumer;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -100,9 +102,8 @@ public final class NetModule {
     }
 
     @Provides
-    @Singleton
-    ApiThrowableHandler provideApiThrowableHandler() {
-        return ApiThrowableHandler.DEFAULT;
+    Consumer<Throwable> provideApiThrowableHandler(Application application) {
+        return new TodoApiThrowableHandler(application);
     }
 
     @Provides
@@ -110,12 +111,19 @@ public final class NetModule {
     Retrofit provideRetrofit(Gson gson,
                              @Named("cached") OkHttpClient okHttpClient,
                              Application application,
-                             ApiThrowableHandler apiThrowableHandler,
+                             Consumer<Throwable> apiThrowableHandler,
                              SchedulerProvider schedulerProvider) {
+        ApiErrorHandlingTransformer errorHandlingTransformer = new ApiErrorHandlingTransformer(application, apiThrowableHandler);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(ApiRxThrowableHandlingCallAdapterFactory.create(application, apiThrowableHandler, schedulerProvider.ui()))
                 .addCallAdapterFactory(ObserveOnCallAdapterFactory.create(schedulerProvider.io()))
+                .addCallAdapterFactory(ApiTransformerCallAdapterFactory.create(errorHandlingTransformer,
+                        errorHandlingTransformer,
+                        errorHandlingTransformer,
+                        errorHandlingTransformer,
+                        errorHandlingTransformer))
+                .addCallAdapterFactory(ObserveOnCallAdapterFactory.create(schedulerProvider.ui()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(mBaseUrl)
                 .client(okHttpClient)
