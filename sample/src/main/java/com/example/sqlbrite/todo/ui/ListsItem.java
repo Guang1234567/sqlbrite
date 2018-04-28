@@ -19,7 +19,6 @@ import android.database.Cursor;
 import android.os.Parcelable;
 
 import com.example.sqlbrite.todo.model.autovalue.DateCursorTypeAdapter;
-import com.example.sqlbrite.todo.model.local.db.Db;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.example.sqlbrite.todo.model.local.db.TodoList;
 import com.gabrielittner.auto.value.cursor.ColumnAdapter;
@@ -65,4 +64,25 @@ public abstract class ListsItem implements Parcelable {
     public static Function<Cursor, ListsItem> MAPPER_FUNCTION() {
         return AutoValue_ListsItem.MAPPER_FUNCTION;
     }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+
+        public abstract Builder id(long id);
+
+        public abstract Builder name(String name);
+
+        public abstract Builder createTimestamp(Date createTimestamp);
+
+        public abstract Builder itemCount(int itemCount);
+
+        public abstract ListsItem build();
+
+    }
+
+    public static Builder builder() {
+        return new AutoValue_ListsItem.Builder();
+    }
+
+    public abstract Builder toBuilder();
 }

@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,7 +44,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 import io.reactivex.functions.Consumer;
 import me.drakeet.multitype.ItemViewBinder;
 import me.drakeet.multitype.MultiTypeAdapter;
@@ -126,6 +124,24 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                     public boolean onMenuItemClick(MenuItem item) {
                         Intent intent = new Intent(getContext(), SystemSettingActivity.class);
                         startActivity(intent);
+                        return true;
+                    }
+                });
+
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        item = menu.add("Test")
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        getViewModel().createQueryListsItems() // 省内存
+                                .compose(ListsFragment.this.<List<ListsItem>>bindUntilEvent(FragmentEvent.PAUSE))
+                                .observeOn(getSchedulerProvider().ui())
+                                .subscribe(new Consumer<List<ListsItem>>() {
+                                    @Override
+                                    public void accept(List<ListsItem> listsItems) throws Exception {
+                                    }
+                                });
                         return true;
                     }
                 });

@@ -5,14 +5,10 @@ import com.example.sqlbrite.todo.model.local.db.TodoList;
 import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 public class ListsItemDao {
 

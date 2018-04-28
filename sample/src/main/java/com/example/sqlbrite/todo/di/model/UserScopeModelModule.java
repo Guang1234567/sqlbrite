@@ -18,12 +18,16 @@ package com.example.sqlbrite.todo.di.model;
 import com.example.sqlbrite.todo.di.UserScope;
 import com.example.sqlbrite.todo.di.model.local.db.DbModule;
 import com.example.sqlbrite.todo.di.model.local.preferences.UserScopePreferencesModule;
+import com.example.sqlbrite.todo.model.DbMainRepository;
 import com.example.sqlbrite.todo.model.MainDataSource;
 import com.example.sqlbrite.todo.model.MainRepository;
+import com.example.sqlbrite.todo.model.MemoryMainRepository;
 import com.example.sqlbrite.todo.model.local.db.TodoItemDao;
 import com.example.sqlbrite.todo.model.local.db.TodoListDao;
 import com.example.sqlbrite.todo.ui.ListsItemDao;
 import com.squareup.sqlbrite3.BriteDatabase;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,9 +39,23 @@ import dagger.Provides;
         }
 )
 public final class UserScopeModelModule {
+
     @Provides
     @UserScope
-    MainDataSource provideMainDataSource(BriteDatabase briteDatabaseb, ListsItemDao listsItemDao, TodoListDao todoListDao, TodoItemDao todoItemDao) {
-        return new MainRepository(briteDatabaseb, listsItemDao, todoListDao, todoItemDao);
+    DbMainRepository provideDbMainRepository(BriteDatabase briteDatabaseb, ListsItemDao listsItemDao, TodoListDao todoListDao, TodoItemDao todoItemDao) {
+        return new DbMainRepository(briteDatabaseb, listsItemDao, todoListDao, todoItemDao);
+    }
+
+    @Named("DbMainRepository")
+    @Provides
+    @UserScope
+    MemoryMainRepository provideMemoryMainRepository() {
+        return new MemoryMainRepository();
+    }
+
+    @Provides
+    @UserScope
+    MainDataSource provideMainDataSource(DbMainRepository dbMainRepository, MemoryMainRepository memoryMainRepository) {
+        return new MainRepository(dbMainRepository, memoryMainRepository);
     }
 }

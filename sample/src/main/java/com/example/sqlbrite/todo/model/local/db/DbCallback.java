@@ -113,6 +113,16 @@ public final class DbCallback extends RxSupportSQLiteOpenHelperCallback {
                     .description("New car")
                     .complete(true)
                     .build());
+
+            long bigDataListId = db.insert(TodoList.TABLE, CONFLICT_FAIL, new TodoList.ContentValuesBuilder()
+                    .name("Big Data")
+                    .build());
+            for (int i = 1; i <= 100000; i++) {
+                db.insert(TodoItem.TABLE, CONFLICT_FAIL, new TodoItem.ContentValuesBuilder().listId(bigDataListId)
+                        .description("Data " + String.valueOf(i))
+                        .complete(true)
+                        .build());
+            }
         });
 
         upgrateToVersion((2)).subscribe(db -> {

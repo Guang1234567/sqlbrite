@@ -26,6 +26,7 @@ import com.example.sqlbrite.todo.di.ActivityScopeComponent;
 import com.example.sqlbrite.todo.model.users.UserSession;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;

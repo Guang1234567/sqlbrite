@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.squareup.sqlbrite3.BriteDatabase;
-import com.squareup.sqlbrite3.SqlBrite;
 import com.squareup.sqlbrite3.support.dao.BriteDaoSupport;
 
 import io.reactivex.Observable;
@@ -53,18 +52,10 @@ public class TodoListDao extends BriteDaoSupport<TodoList> {
 
     public Observable<String> createQueryListName(long listId) {
         return createQuery(getTableName(), TITLE_QUERY, listId)
-                .map(new Function<SqlBrite.Query, String>() {
+                .mapToOne(new Function<Cursor, String>() {
                     @Override
-                    public String apply(SqlBrite.Query query) {
-                        Cursor cursor = query.run();
-                        try {
-                            if (!cursor.moveToNext()) {
-                                throw new AssertionError("No rows");
-                            }
-                            return cursor.getString(0);
-                        } finally {
-                            cursor.close();
-                        }
+                    public String apply(Cursor cursor) throws Exception {
+                        return cursor.getString(0);
                     }
                 });
     }

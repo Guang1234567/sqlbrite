@@ -18,13 +18,13 @@ public interface MainDataSource {
 
     Observable<List<ListsItem>> createQueryListsItems(final long max);
 
-    boolean completeTodoitem(long itemId, boolean complete);
-
     Observable<Integer> createQueryItemCount(long listId);
 
     Observable<List<TodoItem>> createQueryTodoItemsByListId(long listId);
 
     Observable<String> createQueryListName(long listId);
+
+    boolean completeTodoitem(long itemId, boolean complete);
 
     long createNewOneTodoList(String name);
 
