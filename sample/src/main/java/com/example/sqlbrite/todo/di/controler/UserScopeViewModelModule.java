@@ -3,6 +3,7 @@ package com.example.sqlbrite.todo.di.controler;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.controler.SystemSettingViewModel;
 
@@ -22,6 +23,11 @@ public abstract class UserScopeViewModelModule {
     @IntoMap
     @ViewModelKey(SystemSettingViewModel.class)
     abstract ViewModel bindSystemSettingViewModel(SystemSettingViewModel viewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DemoShareViewModel.class)
+    abstract ViewModel bindDemoShareViewModel(DemoShareViewModel viewModel);
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(UserScopeViewModelFactory factory);

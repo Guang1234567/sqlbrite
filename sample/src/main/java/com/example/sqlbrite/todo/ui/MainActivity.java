@@ -15,12 +15,14 @@
  */
 package com.example.sqlbrite.todo.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
+import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.ActivityScopeComponent;
 import com.example.sqlbrite.todo.model.users.UserSession;
@@ -36,6 +38,8 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         implements ListsFragment.Listener, ItemsFragment.Listener {
 
     private static final String TAG = "MainActivity";
+
+    private DemoShareViewModel mDemoShareViewModel;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -60,6 +64,8 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
                 Log.e("lll", String.valueOf(integer));
             }
         });
+
+        mDemoShareViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DemoShareViewModel.class);
     }
 
     @Override
@@ -84,6 +90,11 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
         super.onPause();
         if (isFinishing()) {
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

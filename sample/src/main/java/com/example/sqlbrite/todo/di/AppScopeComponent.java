@@ -16,7 +16,6 @@
 package com.example.sqlbrite.todo.di;
 
 import android.app.Application;
-import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.LoginViewControler;
@@ -28,12 +27,9 @@ import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 import com.example.sqlbrite.todo.ui.SplashActivity;
 import com.google.gson.Gson;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
 
 @Singleton
 @Component(modules = AppScopeModule.class)

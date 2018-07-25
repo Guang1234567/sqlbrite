@@ -18,9 +18,11 @@ package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.support.annotation.Nullable;
 
 import com.example.sqlbrite.todo.di.UserScope;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -35,6 +37,7 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
         this.creators = creators;
     }
 
+    /*
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
@@ -55,5 +58,70 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    */
+
+    private static final Map<Class<? extends ViewModel>, ViewModel> sShareCache = new HashMap<>();
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ViewModel> T create(Class<T> modelClass) {
+        Provider<? extends ViewModel> creator = creators.get(modelClass);
+        if (creator == null) {
+            for (Map.Entry<Class<? extends ViewModel>, Provider<ViewModel>> entry : creators.entrySet()) {
+                if (modelClass.isAssignableFrom(entry.getKey())) {
+                    creator = entry.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (creator == null) {
+            throw new IllegalArgumentException("unknown model class " + modelClass);
+        }
+
+        if (ShareViewModel.class.isAssignableFrom(modelClass)) {
+            return (T) provideShareViewModel(modelClass, creator);
+        }
+
+        try {
+            return (T) creator.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Nullable
+    private <T extends ViewModel> ShareViewModel provideShareViewModel(Class<T> modelClass, Provider<? extends ViewModel> creator) {
+        ShareViewModel shareVM;
+        if (sShareCache.containsKey(modelClass)) {
+            shareVM = (ShareViewModel) sShareCache.get(modelClass);
+        } else {
+            try {
+                shareVM = (ShareViewModel) creator.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if (shareVM != null) {
+                final ShareViewModel tmp = shareVM;
+                shareVM.setOnShareCreated(new Runnable() {
+                    @Override
+                    public void run() {
+                        sShareCache.put(modelClass, tmp);
+                    }
+                });
+                shareVM.setOnShareCleared(new Runnable() {
+                    @Override
+                    public void run() {
+                        sShareCache.remove(modelClass);
+                    }
+                });
+            }
+        }
+
+        if (shareVM != null) {
+            shareVM.incRefCount();
+        }
+        return shareVM;
     }
 }

@@ -25,7 +25,7 @@ class BriteDatabaseProvider {
     private final SupportSQLiteOpenHelper mHelper;
     private final Scheduler mScheduler;
 
-    private AtomicInteger mDbRefCounter;
+    private final AtomicInteger mDbRefCounter;
     private BriteDatabase mDb;
 
     public BriteDatabaseProvider(@NonNull SqlBrite sqlBrite,
@@ -79,9 +79,9 @@ class BriteDatabaseProvider {
                 BriteDatabase briteDatabase = openBriteDatabase();
                 e.onNext(briteDatabase);
 
-                /*if (!e.isDisposed()) {
+                if (!e.isDisposed()) {
                     e.onComplete();
-                }*/
+                }
             }
         }).subscribeOn(mScheduler);
     }

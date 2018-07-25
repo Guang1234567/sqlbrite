@@ -1,5 +1,6 @@
 package com.example.sqlbrite.todo.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
+import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.SystemSettingViewModel;
 import com.example.sqlbrite.todo.di.ActivityScopeComponent;
 
@@ -21,6 +23,8 @@ public class SystemSettingActivity extends BaseViewModelActivity<SystemSettingVi
     @BindView(R.id.btn_logout)
     Button mBtnLogout;
 
+    private DemoShareViewModel mDemoShareViewModel;
+
     @Override
     protected void injectOnCreate(ActivityScopeComponent component) {
         component.inject(this);
@@ -32,6 +36,8 @@ public class SystemSettingActivity extends BaseViewModelActivity<SystemSettingVi
         setContentView(R.layout.activity_system_setting);
 
         ButterKnife.bind(this);
+
+        mDemoShareViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DemoShareViewModel.class);
     }
 
     @OnClick(R.id.btn_logout)

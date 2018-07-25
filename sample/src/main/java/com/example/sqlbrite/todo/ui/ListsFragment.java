@@ -16,6 +16,7 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
+import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.MainViewModel;
 import com.example.sqlbrite.todo.di.FragmentScopeComponent;
 import com.trello.rxlifecycle2.android.FragmentEvent;
@@ -174,6 +176,8 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         listView.addItemDecoration(new DividerItemDecoration(listView.getContext(), DividerItemDecoration.VERTICAL));
         //listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
+
+        DemoShareViewModel demoShareViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(DemoShareViewModel.class);
     }
 
     /*@OnItemClick(android.R.id.list)

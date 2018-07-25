@@ -69,18 +69,10 @@ public class TodoItemDao extends BriteDaoSupport<TodoItem> {
 
     public Observable<Integer> createQueryItemCount(long listId) {
         return createQuery(getTableName(), COUNT_QUERY, listId) //
-                .map(new Function<SqlBrite.Query, Integer>() {
+                .mapToOne(new Function<Cursor, Integer>() {
                     @Override
-                    public Integer apply(SqlBrite.Query query) {
-                        Cursor cursor = query.run();
-                        try {
-                            if (!cursor.moveToNext()) {
-                                throw new AssertionError("No rows");
-                            }
-                            return cursor.getInt(0);
-                        } finally {
-                            cursor.close();
-                        }
+                    public Integer apply(Cursor cursor) throws Exception {
+                        return cursor.getInt(0);
                     }
                 });
     }
