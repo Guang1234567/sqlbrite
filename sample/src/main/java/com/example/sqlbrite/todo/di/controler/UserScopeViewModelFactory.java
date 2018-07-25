@@ -61,7 +61,7 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
     }
     */
 
-    private static final Map<Class<? extends ViewModel>, ViewModel> sShareCache = new HashMap<>();
+    private static final Map<Class<? extends ShareViewModel>, ShareViewModel> sShareCache = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -81,7 +81,7 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
         }
 
         if (ShareViewModel.class.isAssignableFrom(modelClass)) {
-            return (T) provideShareViewModel(modelClass, creator);
+            return (T) provideShareViewModel((Class<ShareViewModel>) modelClass, (Provider<ShareViewModel>) creator);
         }
 
         try {
@@ -92,13 +92,13 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
     }
 
     @Nullable
-    private <T extends ViewModel> ShareViewModel provideShareViewModel(Class<T> modelClass, Provider<? extends ViewModel> creator) {
+    private ShareViewModel provideShareViewModel(Class<? extends ShareViewModel> modelClass, Provider<? extends ShareViewModel> creator) {
         ShareViewModel shareVM;
         if (sShareCache.containsKey(modelClass)) {
-            shareVM = (ShareViewModel) sShareCache.get(modelClass);
+            shareVM = sShareCache.get(modelClass);
         } else {
             try {
-                shareVM = (ShareViewModel) creator.get();
+                shareVM = creator.get();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
