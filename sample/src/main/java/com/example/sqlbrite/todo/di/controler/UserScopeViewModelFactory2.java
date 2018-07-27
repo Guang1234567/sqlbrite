@@ -18,10 +18,7 @@ package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 
 import com.example.sqlbrite.todo.di.UserScope;
 
@@ -32,14 +29,14 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 @UserScope
-public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
+public class UserScopeViewModelFactory2 implements ViewModelProvider.Factory {
 
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> mCreators;
 
     private final Map<Class<? extends ShareViewModel>, ShareViewModel> mShareCache;
 
     @Inject
-    public UserScopeViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+    public UserScopeViewModelFactory2(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
         mCreators = creators;
         mShareCache = new HashMap<>();
     }
@@ -73,7 +70,7 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
     }
 
     @Nullable
-    private ViewModel provideShareViewModel(Class<? extends ShareViewModel> modelClass, Provider<? extends ShareViewModel> creator) {
+    private ShareViewModel provideShareViewModel(Class<? extends ShareViewModel> modelClass, Provider<? extends ShareViewModel> creator) {
         ShareViewModel shareVM;
         if (mShareCache.containsKey(modelClass)) {
             shareVM = mShareCache.get(modelClass);
@@ -99,50 +96,34 @@ public class UserScopeViewModelFactory implements ViewModelProvider.Factory {
                 });
             }
         }
-        ViewModel vm = null;
+
         if (shareVM != null) {
-            vm = new ViewModelSmartPointer(shareVM);
+            shareVM.incRefCount();
         }
-        return vm;
+        return shareVM;
     }
 
-    public final <VM extends ViewModel> VM provide(@NonNull FragmentActivity activity,
-                                                   @NonNull Class<VM> modelClass) {
-
-        VM result = ViewModelProviders.of(activity, this).get(modelClass);
-        if (ShareViewModel.class.isAssignableFrom(modelClass)) {
-            ViewModelSmartPointer<ShareViewModel> sp = (ViewModelSmartPointer<ShareViewModel>) result;
-            result = (VM) sp.ref();
-        }
-        return result;
-    }
-
-    /**
-     * Smart pointer fro {@link ShareViewModel}
-     *
-     * @param <T>
-     */
-    private final static class ViewModelSmartPointer<T extends ShareViewModel> extends ViewModel {
-
-        private T mRef;
-
-        public ViewModelSmartPointer(T ref) {
-            if (ref == null) {
-                throw new RuntimeException("requireNonNull !");
+    /*
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ViewModel> T create(Class<T> modelClass) {
+        Provider<? extends ViewModel> creator = creators.get(modelClass);
+        if (creator == null) {
+            for (Map.Entry<Class<? extends ViewModel>, Provider<ViewModel>> entry : creators.entrySet()) {
+                if (modelClass.isAssignableFrom(entry.getKey())) {
+                    creator = entry.getValue();
+                    break;
+                }
             }
-            ref.incRefCount();
-            mRef = ref;
         }
-
-        @Override
-        protected final void onCleared() {
-            super.onCleared();
-            mRef.decRefCount();
+        if (creator == null) {
+            throw new IllegalArgumentException("unknown model class " + modelClass);
         }
-
-        @NonNull
-        public final T ref() {
-            return mRef;
+        try {
+            return (T) creator.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
+    */
 }

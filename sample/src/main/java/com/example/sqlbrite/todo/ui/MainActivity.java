@@ -15,7 +15,6 @@
  */
 package com.example.sqlbrite.todo.ui;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +27,6 @@ import com.example.sqlbrite.todo.di.ActivityScopeComponent;
 import com.example.sqlbrite.todo.model.users.UserSession;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -65,7 +63,7 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
             }
         });
 
-        mDemoShareViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DemoShareViewModel.class);
+        mDemoShareViewModel = mViewModelFactory.provide(this, DemoShareViewModel.class);
     }
 
     @Override

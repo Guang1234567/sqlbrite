@@ -1,6 +1,5 @@
 package com.example.sqlbrite.todo.ui;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +36,7 @@ public class SystemSettingActivity extends BaseViewModelActivity<SystemSettingVi
 
         ButterKnife.bind(this);
 
-        mDemoShareViewModel = ViewModelProviders.of(this, mViewModelFactory).get(DemoShareViewModel.class);
+        mDemoShareViewModel = mViewModelFactory.provide(this, DemoShareViewModel.class);
     }
 
     @OnClick(R.id.btn_logout)

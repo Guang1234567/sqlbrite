@@ -1,7 +1,6 @@
 package com.example.sqlbrite.todo.di;
 
-import android.arch.lifecycle.ViewModelProvider;
-
+import com.example.sqlbrite.todo.di.controler.UserScopeViewModelFactory;
 import com.example.sqlbrite.todo.model.local.preferences.UserPrefs;
 import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
 
@@ -13,7 +12,7 @@ public interface UserScopeComponent {
 
     SchedulerProvider schedulerProvider();
 
-    ViewModelProvider.Factory viewModelProviderFactory();
+    UserScopeViewModelFactory viewModelProviderFactory();
 
     UserPrefs userPrefs();
 }

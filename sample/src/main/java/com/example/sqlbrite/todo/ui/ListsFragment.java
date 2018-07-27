@@ -16,7 +16,6 @@
 package com.example.sqlbrite.todo.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -177,7 +176,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         //listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
 
-        DemoShareViewModel demoShareViewModel = ViewModelProviders.of(getActivity(), mViewModelFactory).get(DemoShareViewModel.class);
+        DemoShareViewModel demoShareViewModel = mViewModelFactory.provide(getActivity(), DemoShareViewModel.class);
     }
 
     /*@OnItemClick(android.R.id.list)

@@ -1,11 +1,19 @@
 package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.gg.rxbase.lifecycle.RxViewModelLifecycleProviderImpl;
+import com.gg.rxbase.lifecycle.ViewModelEvent;
+import com.trello.rxlifecycle2.LifecycleProvider;
+import com.trello.rxlifecycle2.LifecycleTransformer;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class ShareViewModel extends ViewModel {
+import io.reactivex.Observable;
+
+public abstract class ShareViewModel extends ViewModel implements LifecycleProvider<ViewModelEvent> {
 
     public static final String TAG = "ShareViewModel";
 
@@ -15,8 +23,11 @@ public abstract class ShareViewModel extends ViewModel {
 
     private Runnable mOnShareCleared;
 
+    private final RxViewModelLifecycleProviderImpl mLifecycleProvider;
+
     protected ShareViewModel() {
         mRefCounter = new AtomicInteger(0);
+        mLifecycleProvider = new RxViewModelLifecycleProviderImpl();
     }
 
     void setOnShareCreated(Runnable hook) {
@@ -29,6 +40,7 @@ public abstract class ShareViewModel extends ViewModel {
 
     @Override
     protected final void onCleared() {
+        super.onCleared();
         decRefCount();
     }
 
@@ -40,7 +52,8 @@ public abstract class ShareViewModel extends ViewModel {
 
     }
 
-    protected abstract void onShareCleared();
+    protected void onShareCleared() {
+    }
 
     public final int incRefCount() {
         int counter = mRefCounter.incrementAndGet();
@@ -50,6 +63,7 @@ public abstract class ShareViewModel extends ViewModel {
                 mOnShareCreated.run();
                 mOnShareCreated = null;
             }
+            mLifecycleProvider.onNext(ViewModelEvent.CREATE);
         }
         return counter;
     }
@@ -57,12 +71,13 @@ public abstract class ShareViewModel extends ViewModel {
     public final int decRefCount() {
         int counter = mRefCounter.decrementAndGet();
         if (counter == 0) {
-            onLastRef();
+            mLifecycleProvider.onNext(ViewModelEvent.DESTROY);
+            onShareCleared();
             if (mOnShareCleared != null) {
                 mOnShareCleared.run();
                 mOnShareCleared = null;
             }
-            onShareCleared();
+            onLastRef();
         } else if (counter < 0) {
             Log.e(TAG, "too many decRefCount() call!", new Exception());
 
@@ -80,5 +95,23 @@ public abstract class ShareViewModel extends ViewModel {
         sb.append(", mOnShareCleared=").append(mOnShareCleared);
         sb.append('}');
         return sb.toString();
+    }
+
+    @NonNull
+    @Override
+    public final Observable<ViewModelEvent> lifecycle() {
+        return mLifecycleProvider.lifecycle();
+    }
+
+    @NonNull
+    @Override
+    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull ViewModelEvent event) {
+        return mLifecycleProvider.bindUntilEvent(event);
+    }
+
+    @NonNull
+    @Override
+    public final <T> LifecycleTransformer<T> bindToLifecycle() {
+        return mLifecycleProvider.bindToLifecycle();
     }
 }

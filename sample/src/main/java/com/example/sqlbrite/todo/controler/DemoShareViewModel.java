@@ -13,5 +13,6 @@ public class DemoShareViewModel extends ShareViewModel {
 
     @Override
     protected void onShareCleared() {
+        super.onShareCleared();
     }
 }
