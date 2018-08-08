@@ -23,21 +23,27 @@ import android.widget.Toast;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.di.ActivityScopeComponent;
+import com.example.sqlbrite.todo.di.UserActivityScopeComponent;
 import com.example.sqlbrite.todo.model.users.UserSession;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-public final class MainActivity extends BaseViewModelActivity<MainViewModel>
+public final class MainActivity extends BaseUserViewModelActivity
         implements ListsFragment.Listener, ItemsFragment.Listener {
 
     private static final String TAG = "MainActivity";
 
-    private DemoShareViewModel mDemoShareViewModel;
+    @Inject
+    MainViewModel mMainViewModel;
+
+    @Inject
+    DemoShareViewModel mDemoShareViewModel;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -62,8 +68,6 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
                 Log.e("lll", String.valueOf(integer));
             }
         });
-
-        mDemoShareViewModel = mViewModelFactory.provide(this, DemoShareViewModel.class);
     }
 
     @Override
@@ -72,7 +76,7 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
 
         // Obtain currrent login user to do sth.
         // No login no trigger
-        getViewModel().currentLoginUserSession()
+        mMainViewModel.currentLoginUserSession()
                 .compose(this.<UserSession>bindToLifecycle())
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(new Consumer<UserSession>() {
@@ -96,7 +100,7 @@ public final class MainActivity extends BaseViewModelActivity<MainViewModel>
     }
 
     @Override
-    protected void injectOnCreate(ActivityScopeComponent component) {
+    public void inject(UserActivityScopeComponent component) {
         component.inject(this);
     }
 

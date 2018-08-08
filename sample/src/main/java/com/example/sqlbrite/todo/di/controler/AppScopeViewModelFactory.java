@@ -18,18 +18,17 @@ package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.example.sqlbrite.todo.di.UserScope;
-
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
-@UserScope
-public class UserScopeViewModelFactory extends ShareViewModelFactory {
+@Singleton
+public class AppScopeViewModelFactory extends ShareViewModelFactory {
 
     @Inject
-    public UserScopeViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+    public AppScopeViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
         super(creators);
     }
 }

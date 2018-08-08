@@ -10,22 +10,28 @@ import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.TodoApp;
 import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.SystemSettingViewModel;
-import com.example.sqlbrite.todo.di.ActivityScopeComponent;
+import com.example.sqlbrite.todo.di.UserActivityScopeComponent;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SystemSettingActivity extends BaseViewModelActivity<SystemSettingViewModel> {
+public class SystemSettingActivity extends BaseUserViewModelActivity {
 
     private static final String TAG = "SystemSettingActivity";
     @BindView(R.id.btn_logout)
     Button mBtnLogout;
 
-    private DemoShareViewModel mDemoShareViewModel;
+    @Inject
+    SystemSettingViewModel mSystemSettingViewModel;
+    
+    @Inject
+    DemoShareViewModel mDemoShareViewModel;
 
     @Override
-    protected void injectOnCreate(ActivityScopeComponent component) {
+    public void inject(UserActivityScopeComponent component) {
         component.inject(this);
     }
 
@@ -35,18 +41,15 @@ public class SystemSettingActivity extends BaseViewModelActivity<SystemSettingVi
         setContentView(R.layout.activity_system_setting);
 
         ButterKnife.bind(this);
-
-        mDemoShareViewModel = mViewModelFactory.provide(this, DemoShareViewModel.class);
     }
 
     @OnClick(R.id.btn_logout)
     void listClicked(View v) {
-        getViewModel().logout()
+        mSystemSettingViewModel.logout()
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(
                         () -> {
                             Toast.makeText(SystemSettingActivity.this, "注销成功!", Toast.LENGTH_SHORT).show();
-
                             TodoApp.getApplication(this).exit();
                         },
 

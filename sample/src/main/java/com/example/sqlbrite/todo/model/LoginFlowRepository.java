@@ -1,5 +1,6 @@
-package com.example.sqlbrite.todo.controler;
+package com.example.sqlbrite.todo.model;
 
+import com.example.sqlbrite.todo.di.controler.ShareViewModel;
 import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
 import com.example.sqlbrite.todo.model.users.UserManager;
 import com.example.sqlbrite.todo.model.users.UserSession;
@@ -19,7 +20,7 @@ import io.reactivex.functions.Function;
  * @date 2018/3/6 14:40
  */
 
-public class LoginViewControler {
+public class LoginFlowRepository {
 
     private final UserManager mUserManager;
     private final AppPrefs mAppPrefs;
@@ -28,9 +29,9 @@ public class LoginViewControler {
     private UserSession mUserSession = null;
 
     @Inject
-    public LoginViewControler(UserManager userManager,
-                              AppPrefs appPrefs,
-                              SchedulerProvider schedulerProvider) {
+    public LoginFlowRepository(UserManager userManager,
+                               AppPrefs appPrefs,
+                               SchedulerProvider schedulerProvider) {
         mUserManager = userManager;
         mAppPrefs = appPrefs;
         mSchedulerProvider = schedulerProvider;

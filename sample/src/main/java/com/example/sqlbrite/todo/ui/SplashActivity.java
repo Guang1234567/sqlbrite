@@ -6,38 +6,31 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
-import com.example.sqlbrite.todo.controler.LoginViewControler;
-import com.example.sqlbrite.todo.di.AppScopeComponent;
-import com.example.sqlbrite.todo.di.InjectHelper;
+import com.example.sqlbrite.todo.controler.LoginFlowViewModel;
+import com.example.sqlbrite.todo.di.AppActivityScopeComponent;
 import com.example.sqlbrite.todo.model.users.UserSession;
-import com.example.sqlbrite.todo.schedulers.SchedulerProvider;
-import com.gg.rxbase.ui.RxBaseActivity;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
-public class SplashActivity extends RxBaseActivity {
+public class SplashActivity extends BaseAppViewModelActivity{
 
     private static final String TAG = "SplashActivity";
 
     @Inject
-    LoginViewControler mViewModel;
-    @Inject SchedulerProvider mSchedulerProvider;
+    LoginFlowViewModel mLoginFlowViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        AppScopeComponent appScopeComponent = InjectHelper.instance().getAppScopeComponent();
-        appScopeComponent.inject(this);
-
-        mViewModel
+        mLoginFlowViewModel
                 .login("user_id_lucy", "pwd_1234567")
                 .compose(this.<UserSession>bindToLifecycle())
-                .observeOn(mSchedulerProvider.ui())
+                .observeOn(getSchedulerProvider().ui())
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
@@ -63,7 +56,17 @@ public class SplashActivity extends RxBaseActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void NaviToMain() {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    @Override
+    public void inject(AppActivityScopeComponent component) {
+        component.inject(this);
     }
 }

@@ -16,10 +16,10 @@
 package com.example.sqlbrite.todo.di;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.example.sqlbrite.todo.TodoApp;
-import com.example.sqlbrite.todo.controler.LoginViewControler;
+import com.example.sqlbrite.todo.model.LoginFlowRepository;
+import com.example.sqlbrite.todo.di.controler.AppScopeViewModelModule;
 import com.example.sqlbrite.todo.di.model.AppScopeModelModule;
 import com.example.sqlbrite.todo.di.schedulers.SchedulerModule;
 import com.example.sqlbrite.todo.model.local.preferences.AppPrefs;
@@ -34,7 +34,8 @@ import dagger.Provides;
 @Module(
         includes = {
                 SchedulerModule.class,
-                AppScopeModelModule.class
+                AppScopeModelModule.class,
+                AppScopeViewModelModule.class,
         }
 )
 public final class AppScopeModule {
@@ -51,11 +52,13 @@ public final class AppScopeModule {
         return mApplication;
     }
 
-    /*@Provides
+    /*
+    @Provides
     @Singleton
     public Context provideContext() {
         return mApplication;
-    }*/
+    }
+    */
 
     @Provides
     @Singleton
@@ -65,7 +68,8 @@ public final class AppScopeModule {
 
     @Provides
     @Singleton
-    public LoginViewControler provideLoginViewControler(UserManager userManager, AppPrefs appPrefs, SchedulerProvider schedulerProvider) {
-        return new LoginViewControler(userManager, appPrefs, schedulerProvider);
+    public LoginFlowRepository provideLoginFlowRepository(UserManager userManager, AppPrefs appPrefs, SchedulerProvider schedulerProvider) {
+        return new LoginFlowRepository(userManager, appPrefs, schedulerProvider);
     }
+
 }

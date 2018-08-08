@@ -1,15 +1,14 @@
 package com.example.sqlbrite.todo.di;
 
-import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.example.sqlbrite.todo.di.model.local.db.DbModule;
 import com.example.sqlbrite.todo.di.model.local.preferences.AppScopePreferencesModule;
 import com.example.sqlbrite.todo.di.model.local.preferences.UserScopePreferencesModule;
 import com.example.sqlbrite.todo.di.model.remote.NetModule;
 import com.example.sqlbrite.todo.di.model.remote.TodoApiModule;
-import com.example.sqlbrite.todo.ui.BaseViewModelActivity;
 
 /**
  * @author Guang1234567
@@ -54,19 +53,33 @@ public class InjectHelper {
                 .build();
     }
 
-    public ActivityScopeComponent createActivityScopeComponent(Activity activity, UserScopeComponent userScopeComponent) {
-        return DaggerActivityScopeComponent.builder()
+    public UserActivityScopeComponent createUserActivityScopeComponent(FragmentActivity activity, UserScopeComponent userScopeComponent) {
+        return DaggerUserActivityScopeComponent.builder()
                 .userScopeComponent(userScopeComponent)
-                .activityScopeModule(new ActivityScopeModule(activity))
+                .userActivityScopeModule(new UserActivityScopeModule(activity))
                 .build();
     }
 
 
-    public FragmentScopeComponent createFragmentScopeComponent(BaseViewModelActivity activity, Fragment fragment) {
-        ActivityScopeComponent activityScopeComponent = activity.getActivityScopeComponent();
-        return DaggerFragmentScopeComponent.builder()
-                .activityScopeComponent(activityScopeComponent)
-                .fragmentScopeModule(new FragmentScopeModule(fragment))
+    public UserFragmentScopeComponent createUserFragmentScopeComponent(Fragment fragment, UserActivityScopeComponent activityScopeComponent) {
+        return DaggerUserFragmentScopeComponent.builder()
+                .userActivityScopeComponent(activityScopeComponent)
+                .userFragmentScopeModule(new UserFragmentScopeModule(fragment))
+                .build();
+    }
+
+    public AppActivityScopeComponent createAppActivityScopeComponent(FragmentActivity activity) {
+        return DaggerAppActivityScopeComponent.builder()
+                .appScopeComponent(getAppScopeComponent())
+                .appActivityScopeModule(new AppActivityScopeModule(activity))
+                .build();
+    }
+
+
+    public AppFragmentScopeComponent createAppFragmentScopeComponent(Fragment fragment, AppActivityScopeComponent activityScopeComponent) {
+        return DaggerAppFragmentScopeComponent.builder()
+                .appActivityScopeComponent(activityScopeComponent)
+                .appFragmentScopeModule(new AppFragmentScopeModule(fragment))
                 .build();
     }
 }

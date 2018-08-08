@@ -1,5 +1,6 @@
 package com.example.sqlbrite.todo.controler;
 
+import com.example.sqlbrite.todo.model.LoginFlowRepository;
 import com.example.sqlbrite.todo.model.MainDataSource;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.example.sqlbrite.todo.model.users.UserSession;
@@ -24,35 +25,35 @@ import io.reactivex.Observable;
 public class MainViewModel extends RxBaseViewModel {
 
     private final MainDataSource mDataSource;
-    private final LoginViewControler mLoginViewControler;
+    private final LoginFlowRepository mLoginFlowRepository;
     private final SchedulerProvider mSchedulerProvider;
 
     private Date mLastCreateTime;
 
     @Inject
     public MainViewModel(MainDataSource dataSource,
-                         LoginViewControler loginViewControler,
+                         LoginFlowRepository LoginFlowRepository,
                          SchedulerProvider schedulerProvider) {
         mDataSource = dataSource;
-        mLoginViewControler = loginViewControler;
+        mLoginFlowRepository = LoginFlowRepository;
         mSchedulerProvider = schedulerProvider;
         mLastCreateTime = new Date();
     }
 
     public Observable<UserSession> currentLoginUserSession() {
-        return mLoginViewControler.currentLoginUserSession();
+        return mLoginFlowRepository.currentLoginUserSession();
     }
 
-    public Observable<List<ListsItem>> createQueryListsItems() {
+    public Observable<List<ListsItem>> getListsItems() {
         return mDataSource.createQueryListsItems(100)// 省内存
-                .compose(this.<List<ListsItem>>bindToLifecycle()); // 等价 bindUntilEvent(ViewModelEvent.DESTROY)
+                .compose(bindToLifecycle()); // 释放资源
     }
 
     public boolean complete(long id, boolean complete) {
         return mDataSource.completeTodoitem(id, complete);
     }
 
-    public Observable<Integer> createQueryItemCount(long listId) {
+    public Observable<Integer> getItemCount(long listId) {
         return mDataSource.createQueryItemCount(listId)
                 .compose(this.<Integer>bindUntilEvent(ViewModelEvent.DESTROY));
     }

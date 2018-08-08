@@ -44,14 +44,7 @@ public class DbMainRepository implements MainDataSource {
     @Override
     public Observable<List<ListsItem>> createQueryListsItems(final long max) {
         return mListsItemDao
-                .createQueryListsItems(500)
-                .doOnNext(new Consumer<List<ListsItem>>() {
-                    @Override
-                    public void accept(List<ListsItem> listsItems) throws Exception {
-                        int i = 1;
-                    }
-                })
-                .take(max);
+                .createQueryListsItems(max);
     }
 
     @Override

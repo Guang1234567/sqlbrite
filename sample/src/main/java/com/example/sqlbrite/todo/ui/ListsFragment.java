@@ -37,11 +37,14 @@ import android.widget.Toast;
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.DemoShareViewModel;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.di.FragmentScopeComponent;
+import com.example.sqlbrite.todo.di.UserFragmentScopeComponent;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.io.File;
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,8 +52,21 @@ import io.reactivex.functions.Consumer;
 import me.drakeet.multitype.ItemViewBinder;
 import me.drakeet.multitype.MultiTypeAdapter;
 
-public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
+public final class ListsFragment extends BaseUserViewModelFragment {
     private static final String TAG = "ListsFragment";
+
+    // 同一Activity内多个Fragment共享的ViewModel实例.
+    @Inject
+    MainViewModel mMainViewModel;
+
+    // 当前Fragment内部私有的ViewModel实例.
+    @Inject
+    @Named("FragmentScope")
+    MainViewModel mMainViewModelInFragmentScope;
+
+    // 多个Activity和多个Fragment都能共享的ViewModel实例 (类似单例, 但实际上是引用计数).
+    @Inject
+    DemoShareViewModel demoShareViewModel;
 
     interface Listener {
         void onListClicked(long id);
@@ -89,7 +105,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
     }
 
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    public void inject(UserFragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -135,12 +151,13 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        getViewModel().createQueryListsItems() // 省内存
+                        mMainViewModel.getListsItems() // 省内存
                                 .compose(ListsFragment.this.<List<ListsItem>>bindUntilEvent(FragmentEvent.PAUSE))
                                 .observeOn(getSchedulerProvider().ui())
                                 .subscribe(new Consumer<List<ListsItem>>() {
                                     @Override
                                     public void accept(List<ListsItem> listsItems) throws Exception {
+                                        int i = 1;
                                     }
                                 });
                         return true;
@@ -152,7 +169,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
 
     private void exportDB() {
         try {
-            File dstFile = getViewModel().exportDecryption();
+            File dstFile = mMainViewModel.exportDecryption();
             Toast.makeText(getContext(), "导出数据库成功!\n" + dstFile.getPath(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(TAG, "导出数据库失败!", e);
@@ -175,8 +192,6 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
         listView.addItemDecoration(new DividerItemDecoration(listView.getContext(), DividerItemDecoration.VERTICAL));
         //listView.setEmptyView(emptyView);
         listView.setAdapter(adapter);
-
-        DemoShareViewModel demoShareViewModel = mViewModelFactory.provide(getActivity(), DemoShareViewModel.class);
     }
 
     /*@OnItemClick(android.R.id.list)
@@ -203,7 +218,7 @@ public final class ListsFragment extends BaseViewModelFragment<MainViewModel> {
 
 
         /*disposable = */
-        getViewModel().createQueryListsItems() // 省内存
+        mMainViewModel.getListsItems() // 省内存
                 .compose(this.<List<ListsItem>>bindUntilEvent(FragmentEvent.PAUSE))
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(new Consumer<List<ListsItem>>() {

@@ -28,6 +28,7 @@ public abstract class ShareViewModel extends ViewModel implements LifecycleProvi
     protected ShareViewModel() {
         mRefCounter = new AtomicInteger(0);
         mLifecycleProvider = new RxViewModelLifecycleProviderImpl();
+        mLifecycleProvider.onNext(ViewModelEvent.CREATE);
     }
 
     void setOnShareCreated(Runnable hook) {
@@ -58,12 +59,11 @@ public abstract class ShareViewModel extends ViewModel implements LifecycleProvi
     public final int incRefCount() {
         int counter = mRefCounter.incrementAndGet();
         if (counter == 1) {
-            onFirstRef();
             if (mOnShareCreated != null) {
                 mOnShareCreated.run();
                 mOnShareCreated = null;
             }
-            mLifecycleProvider.onNext(ViewModelEvent.CREATE);
+            onFirstRef();
         }
         return counter;
     }
@@ -71,15 +71,15 @@ public abstract class ShareViewModel extends ViewModel implements LifecycleProvi
     public final int decRefCount() {
         int counter = mRefCounter.decrementAndGet();
         if (counter == 0) {
-            mLifecycleProvider.onNext(ViewModelEvent.DESTROY);
-            onShareCleared();
+            onLastRef();
             if (mOnShareCleared != null) {
                 mOnShareCleared.run();
                 mOnShareCleared = null;
             }
-            onLastRef();
+            onShareCleared();
+            mLifecycleProvider.onNext(ViewModelEvent.DESTROY);
         } else if (counter < 0) {
-            Log.e(TAG, "too many decRefCount() call!", new Exception());
+            Log.e(TAG, "Too many decRefCount() call!", new Exception());
 
             mRefCounter.set(0);
             mOnShareCleared = null;

@@ -18,25 +18,23 @@ package com.example.sqlbrite.todo.di.controler;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.example.sqlbrite.todo.di.UserScope;
+import android.support.v4.app.FragmentActivity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
-@UserScope
-public class UserScopeViewModelFactory2 implements ViewModelProvider.Factory {
+public abstract class ShareViewModelFactory implements ViewModelProvider.Factory {
 
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> mCreators;
 
     private final Map<Class<? extends ShareViewModel>, ShareViewModel> mShareCache;
 
-    @Inject
-    public UserScopeViewModelFactory2(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
+    public ShareViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
         mCreators = creators;
         mShareCache = new HashMap<>();
     }
@@ -101,6 +99,12 @@ public class UserScopeViewModelFactory2 implements ViewModelProvider.Factory {
             shareVM.incRefCount();
         }
         return shareVM;
+    }
+
+    public final <VM extends ViewModel> VM provide(@NonNull FragmentActivity activity,
+                                                   @NonNull Class<VM> modelClass) {
+        VM result = ViewModelProviders.of(activity, this).get(modelClass);
+        return result;
     }
 
     /*

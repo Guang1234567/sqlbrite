@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.di.FragmentScopeComponent;
+import com.example.sqlbrite.todo.di.UserFragmentScopeComponent;
 import com.example.sqlbrite.todo.model.local.db.TodoItem;
 import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
@@ -38,14 +38,19 @@ import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 
-public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
+public final class ItemsFragment extends BaseUserViewModelFragment {
     private static final String KEY_LIST_ID = "list_id";
+
+    @Inject
+    MainViewModel mMainViewModel;
 
     public interface Listener {
 
@@ -88,11 +93,10 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         setHasOptionsMenu(true);
 
         listener = (Listener) activity;
-        adapter = new ItemsAdapter(context);
     }
 
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    public void inject(UserFragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -124,7 +128,13 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
 
         ButterKnife.bind(this, view);
         listView.setEmptyView(emptyView);
+        adapter = new ItemsAdapter(getContext());
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         RxAdapterView.itemClickEvents(listView)
                 .observeOn(getSchedulerProvider().io())
@@ -132,7 +142,7 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
                     @Override
                     public void accept(AdapterViewItemClickEvent event) {
                         boolean newValue = !adapter.getItem(event.position()).complete();
-                        getViewModel().complete(event.id(), newValue);
+                        mMainViewModel.complete(event.id(), newValue);
                     }
                 });
     }
@@ -144,8 +154,8 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
 
         //disposables = new CompositeDisposable();
 
-        Observable<Integer> itemCount = getViewModel().createQueryItemCount(listId);
-        Observable<String> listName = getViewModel().createQueryListName(listId);
+        Observable<Integer> itemCount = mMainViewModel.getItemCount(listId);
+        Observable<String> listName = mMainViewModel.createQueryListName(listId);
 
         //disposables.add(
         Observable
@@ -167,14 +177,14 @@ public final class ItemsFragment extends BaseViewModelFragment<MainViewModel> {
         ;
 
         //disposables.add(
-        getViewModel().createQueryTodoItemsByListId(listId)
+        mMainViewModel.createQueryTodoItemsByListId(listId)
                 .compose(this.<List<TodoItem>>bindUntilEvent(FragmentEvent.PAUSE))
                 .observeOn(getSchedulerProvider().ui())
                 .subscribe(adapter)
         //)
         ;
 
-        CharSequence content = "请切换成横屏!\nViewModel 仍是同一个!\n创建时间 : " + String.valueOf(getViewModel().getLastCreateTime());
+        CharSequence content = "请切换成横屏!\nViewModel 仍是同一个!\n创建时间 : " + String.valueOf(mMainViewModel.getLastCreateTime());
         Toast.makeText(getContext(),
                 content,
                 Toast.LENGTH_LONG)

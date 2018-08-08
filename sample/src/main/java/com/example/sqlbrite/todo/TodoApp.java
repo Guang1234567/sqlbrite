@@ -35,9 +35,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-public final class TodoApp extends Application {
-
-    private AppScopeComponent mAppScopeComponent;
+public final class TodoApp extends Application implements AppScopeComponent.Injectable{
 
     @Inject
     ActivityMgr mActivityMgr;
@@ -61,11 +59,7 @@ public final class TodoApp extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        mAppScopeComponent = InjectHelper.instance()
-                .init(this);
-
-        mAppScopeComponent.inject(this);
-
+        inject(InjectHelper.instance().init(this));
     }
 
     public void exit() {
@@ -83,6 +77,11 @@ public final class TodoApp extends Application {
 
     private void exitInMainThread() {
         mActivityMgr.finishAllActivity();
+    }
+
+    @Override
+    public void inject(AppScopeComponent component) {
+        component.inject(this);
     }
 
     public final static class ActivityMgr {

@@ -27,24 +27,29 @@ import android.widget.EditText;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.di.FragmentScopeComponent;
+import com.example.sqlbrite.todo.di.UserFragmentScopeComponent;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
-public final class NewListFragment extends BaseViewModelDialogFragment<MainViewModel> {
+public final class NewListFragment extends BaseUserViewModelDialogFragment {
+
+    @Inject
+    MainViewModel mMainViewModel;
+
+    private final PublishSubject<String> createClicked = PublishSubject.create();
 
     public static NewListFragment newInstance() {
         return new NewListFragment();
     }
 
-    private final PublishSubject<String> createClicked = PublishSubject.create();
-
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    public void inject(UserFragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -67,7 +72,7 @@ public final class NewListFragment extends BaseViewModelDialogFragment<MainViewM
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String name) {
-                        getViewModel().createNewOneTodoList(name);
+                        mMainViewModel.createNewOneTodoList(name);
                     }
                 });
 

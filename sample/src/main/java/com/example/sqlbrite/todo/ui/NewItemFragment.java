@@ -15,7 +15,6 @@
  */
 package com.example.sqlbrite.todo.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -28,17 +27,21 @@ import android.widget.EditText;
 
 import com.example.sqlbrite.todo.R;
 import com.example.sqlbrite.todo.controler.MainViewModel;
-import com.example.sqlbrite.todo.di.FragmentScopeComponent;
-import com.example.sqlbrite.todo.di.InjectHelper;
+import com.example.sqlbrite.todo.di.UserFragmentScopeComponent;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
-public final class NewItemFragment extends BaseViewModelDialogFragment<MainViewModel> {
+public final class NewItemFragment extends BaseUserViewModelDialogFragment {
     private static final String KEY_LIST_ID = "list_id";
+
+    @Inject
+    MainViewModel mMainViewModel;
 
     public static NewItemFragment newInstance(long listId) {
         Bundle arguments = new Bundle();
@@ -56,7 +59,7 @@ public final class NewItemFragment extends BaseViewModelDialogFragment<MainViewM
     }
 
     @Override
-    protected void injectOnAttach(FragmentScopeComponent component) {
+    public void inject(UserFragmentScopeComponent component) {
         component.inject(this);
     }
 
@@ -79,7 +82,7 @@ public final class NewItemFragment extends BaseViewModelDialogFragment<MainViewM
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String description) {
-                        getViewModel().createNewOneTodoItem(getListId(), description);
+                        mMainViewModel.createNewOneTodoItem(getListId(), description);
                     }
                 });
 
